@@ -2,7 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import taskRoutes from './routes/tasks.js';
+import taskRoutes from './routes/task.js';
 import CONNECTION_URL from './db.js';
 
 const app = express();
