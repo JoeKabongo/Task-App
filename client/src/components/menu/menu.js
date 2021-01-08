@@ -15,7 +15,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function TypographyMenu() {
+export default function Navbar() {
   const classes = useStyles();
 
   return (
