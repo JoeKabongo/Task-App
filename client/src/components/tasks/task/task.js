@@ -5,7 +5,8 @@ import IconButton from '@material-ui/core/IconButton';
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 
 export default function Task(props) {
-  const { name, status } = props.task;
+  const { name, isCompleted } = props.task;
+  console.log(props.onChange);
   const style = {
     display: 'flex',
     justifyContent: 'space-between',
@@ -19,11 +20,11 @@ export default function Task(props) {
   return (
     <div style={style}>
       <FormControlLabel
-        style={{ textDecoration: status == 1 ? 'line-through' : 'none' }}
+        style={{ textDecoration: isCompleted ? 'line-through' : 'none' }}
         control={
           <Checkbox
-            checked={status === 1 ? true : false}
-            // onChange={handleChange}
+            checked={isCompleted}
+            onChange={() => props.onChange()}
             name="checkedA"
           />
         }
