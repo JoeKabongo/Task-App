@@ -8,8 +8,8 @@ import HomeIcon from '@material-ui/icons/Home';
 import TodayIcon from '@material-ui/icons/Today';
 import AddIcon from '@material-ui/icons/Add';
 import ClassIcon from '@material-ui/icons/Class';
-import { Link } from 'react-router-dom';
 import useStyles from './style';
+import { Link } from 'react-router-dom';
 
 export default function TypographyMenu() {
   const classes = useStyles();
@@ -21,23 +21,27 @@ export default function TypographyMenu() {
           <Typography variant="h3">To-Do</Typography>
         </MenuItem>
 
-        <MenuItem Link="/" className={classes.item}>
-          <ListItemIcon>
-            <HomeIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit">All Tasks</Typography>
+        <MenuItem className={classes.item}>
+          <Link to="/">
+            <ListItemIcon>
+              <HomeIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit">All Tasks</Typography>
+          </Link>
         </MenuItem>
-        <MenuItem Link="/" className={classes.item}>
+        <MenuItem className={classes.item}>
           <ListItemIcon>
             <TodayIcon fontSize="small" />
           </ListItemIcon>
           <Typography variant="inherit"> Today </Typography>
         </MenuItem>
         <MenuItem className={classes.item}>
-          <ListItemIcon>
-            <ClassIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit">School</Typography>
+          <Link to="/School">
+            <ListItemIcon>
+              <ClassIcon fontSize="small" />
+            </ListItemIcon>
+            <Typography variant="inherit">School</Typography>
+          </Link>
         </MenuItem>
         <MenuItem className={classes.item}>
           <ListItemIcon>
