@@ -22,7 +22,7 @@ export default function TypographyMenu() {
         </MenuItem>
 
         <MenuItem className={classes.item}>
-          <Link to="/">
+          <Link to="/" className={classes.link}>
             <ListItemIcon>
               <HomeIcon fontSize="small" />
             </ListItemIcon>
@@ -36,7 +36,7 @@ export default function TypographyMenu() {
           <Typography variant="inherit"> Today </Typography>
         </MenuItem>
         <MenuItem className={classes.item}>
-          <Link to="/School">
+          <Link to="/School" className={classes.link}>
             <ListItemIcon>
               <ClassIcon fontSize="small" />
             </ListItemIcon>

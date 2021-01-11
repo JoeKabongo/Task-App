@@ -1,6 +1,6 @@
 import React from 'react';
 import Navbar from '../src/components/navBar/navbar';
-import Tasks from '../src/components/tasks/tasks';
+import TaskList from '../src/components/tasks/taskList';
 import ErrorPage from '../src/components/errorPage/errorPage';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 
@@ -11,10 +11,10 @@ export default function App() {
       <main style={{ marginLeft: '300px' }}>
         <Switch>
           <Route exact path="/">
-            <Tasks />
+            <TaskList />
           </Route>
           <Route exact path="/:category">
-            <Tasks />
+            <TaskList />
           </Route>
           <Route path="*">
             <ErrorPage />

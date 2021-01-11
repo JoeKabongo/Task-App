@@ -13,6 +13,10 @@ const useStyles = makeStyles({
   item: {
     fontWeight: 'bold',
   },
+  link: {
+    textDecoration: 'none',
+    color: '#000',
+  },
 });
 
 export default useStyles;

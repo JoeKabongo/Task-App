@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 
 import Task from './task/task';
+import AddTaskForm from '../forms/addTask/addTask';
 
 const allTasks = [
   { name: 'Eat breakfast', isCompleted: false, id: 3, category: 'School' },
@@ -12,7 +13,7 @@ const allTasks = [
   { name: 'Wathever', isCompleted: false, id: 4, category: 'Shopping' },
 ];
 
-export default function Tasks(props) {
+export default function TaskList(props) {
   const [tasks, setTasks] = useState(allTasks);
   const [toDelete, setToDelete] = useState(null);
   const [deleteBox, setDeleteBox] = useState(false);
@@ -45,6 +46,7 @@ export default function Tasks(props) {
   return (
     <section style={{ padding: '15px' }}>
       <h1> All Task</h1>
+      <AddTaskForm setTasks={setTasks} tasks={tasks} />
       {tasks
         .filter((task) => !task.isCompleted)
         .map((task) => {
