@@ -13,7 +13,6 @@ import { Link } from 'react-router-dom';
 
 export default function TypographyMenu() {
   const classes = useStyles();
-
   return (
     <Paper className={classes.root}>
       <MenuList>

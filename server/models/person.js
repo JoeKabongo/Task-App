@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 // Schema for a user
 const personSchema = mongoose.Schema({
   username: String,
+  id_token: String,
   dateJoined: {
     type: Date,
     default: new Date(),

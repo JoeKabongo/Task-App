@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import axios from 'axios';
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
@@ -14,20 +15,28 @@ export default function AddTaskForm({ tasks, setTasks }) {
   const [textValue, setTextValue] = useState('');
   const classes = useStyles();
 
-  function handleSubmit(e) {
+  const handleSubmit = (e) => {
     e.preventDefault();
+    // only update tasks if user entered some text
     if (textValue) {
-      const newTasks = {
+      const newTask = {
         name: textValue,
         isCompleted: false,
-        id: new Date().getTime().toString(),
-        category: 'x',
       };
 
-      setTasks([newTasks, ...tasks]);
-      setTextValue('');
+      axios
+        .post(`http://localhost:5000/tasks/create`, newTask)
+        .then((res) => {
+          setTasks([newTask, ...tasks]);
+          setTextValue('');
+          console.log(res);
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
-  }
+  };
 
   return (
     <form

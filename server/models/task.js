@@ -1,8 +1,12 @@
 import mongoose from 'mongoose';
+import Category from './category.js';
 
 // Schema for a task
 const taskSchema = mongoose.Schema({
-  name: String,
+  name: {
+    type: String,
+    required: true,
+  },
   description: String,
   dateCreated: {
     type: Date,
@@ -10,16 +14,19 @@ const taskSchema = mongoose.Schema({
   },
   dueDate: Date,
   category: {
-    type: Schema.ObjecId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
   },
   steps: [
     {
-      type: Schema.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: 'Step',
     },
   ],
-  status: Number,
+  isCompleted: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const Task = mongoose.model('Task', taskSchema);

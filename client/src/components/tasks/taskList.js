@@ -1,45 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
+import axios from '../../api/index';
+
 import Task from './task/task';
-import AddTaskForm from '../forms/addTask/addTask';
+import AddTaskForm from './addTask/addTask';
 import DeleteConfirmation from './deleteConfirmation/deleteConfirmation';
 
-const allTasks = [
-  { name: 'Eat breakfast', isCompleted: false, id: 3, category: 'School' },
-  { name: 'Dormir', isCompleted: false, id: 32, category: 'School' },
-  { name: 'Wathever', isCompleted: false, id: 4, category: 'Shopping' },
-];
-
-export default function TaskList(props) {
-  const [tasks, setTasks] = useState(allTasks);
+export default function TaskList() {
+  const [tasks, setTasks] = useState([]);
   const [toDelete, setToDelete] = useState(null);
   const [deleteBox, setDeleteBox] = useState(false);
 
   const { category } = useParams();
 
-  function handleChange(taskId) {
+  useEffect(() => {
+    const fetchData = async () => {
+      const request = await axios.get();
+      setTasks(request.data);
+    };
+
+    fetchData();
+  }, []);
+
+  // change completed status of a task
+  const handleChange = (taskId) => {
     setTasks((tasks) => {
       return tasks.map((task) =>
         task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
       );
     });
-  }
+  };
 
-  function handleDelete(taskId) {
+  // open confirmation delete box
+  const handleDelete = (taskId) => {
     setToDelete(taskId);
     setDeleteBox(true);
-  }
+  };
 
-  function cancelDeletion() {
+  // cancel deletion and close confirmation delete box
+  const cancelDeletion = () => {
     setDeleteBox(false);
-  }
+  };
 
-  function deleteTask() {
+  // delete task
+  const deleteTask = () => {
     const newTasks = tasks.filter((task) => task.id !== toDelete);
     setTasks(newTasks);
     setDeleteBox(false);
-  }
+  };
 
   return (
     <section style={{ padding: '15px' }}>
@@ -57,7 +66,6 @@ export default function TaskList(props) {
             />
           );
         })}
-
       {tasks.filter((task) => task.isCompleted).length !== 0 ? (
         <section>
           <h3> Completed </h3>
