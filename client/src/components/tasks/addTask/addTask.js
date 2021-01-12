@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-import axios from 'axios';
+import axios from '../../../api/index';
 const useStyles = makeStyles((theme) => ({
   root: {
     '& > *': {
@@ -25,7 +25,7 @@ export default function AddTaskForm({ tasks, setTasks }) {
       };
 
       axios
-        .post(`http://localhost:5000/tasks/create`, newTask)
+        .post('/tasks/create', newTask)
         .then((res) => {
           setTasks([newTask, ...tasks]);
           setTextValue('');

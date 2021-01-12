@@ -16,7 +16,7 @@ export default function TaskList() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const request = await axios.get();
+      const request = await axios.get('/tasks');
       setTasks(request.data);
     };
 

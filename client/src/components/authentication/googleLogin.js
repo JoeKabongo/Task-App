@@ -2,7 +2,7 @@ import React from 'react';
 import GoogleLogin from 'react-google-login';
 import axios from '../../api/index';
 import key from './key';
-export default function LoginGoogle() {
+export default function LoginWithGoogle() {
   return (
     <GoogleLogin
       clientId={key}
@@ -15,9 +15,10 @@ export default function LoginGoogle() {
 }
 
 const responseSuccess = (response) => {
+  console.log(response.tokenId);
   axios
-    .post('login/googlelogin', {
-      tokendId: response.tokenId,
+    .post('/auth/googlelogin', {
+      tokenId: response.tokenId,
       username: response.profileObj.name,
     })
     .then((response) => {

@@ -1,3 +1,4 @@
 node_modules/
 /server/db.js
+/server/config/config.js
 /client/src/components/authentication/key.js

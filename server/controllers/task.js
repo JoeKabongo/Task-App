@@ -4,9 +4,9 @@ import Task from '../models/task.js';
 export async function getTasks(req, res) {
   try {
     const tasks = await Task.find();
-    res.status(200).json(tasks);
+    return res.status(200).json(tasks);
   } catch (error) {
-    res.status(404).json({ message: error.message });
+    return res.status(404).json({ message: error.message });
   }
 }
 
@@ -19,10 +19,10 @@ export async function createTask(req, res) {
       await newTask.save();
       res.status(201).json(newTask);
     } catch (error) {
-      res.status(409).json({ message: error.message });
+      res.status(409).json({ error: error.message });
     }
   } else {
-    res.status(400).json({ message: 'invalid request' });
+    res.status(400).json({ error: 'invalid request' });
   }
 }
 
