@@ -4,7 +4,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import taskRoutes from './routes/task.js';
 import authRoutes from './routes/auth.js';
-import { DB_CONNECTION_URL } from './config/config.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
 
@@ -15,7 +16,7 @@ app.use(cors());
 const PORT = process.env.PORT || 5000;
 
 mongoose
-  .connect(DB_CONNECTION_URL, {
+  .connect(process.env.DATABASE, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })

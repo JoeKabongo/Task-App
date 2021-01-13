@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Task from '../models/task.js';
 
 export async function getTasks(req, res) {
+  console.log(process.env.DATABASE);
   try {
     const tasks = await Task.find();
     return res.status(200).json(tasks);
