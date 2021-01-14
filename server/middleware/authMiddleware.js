@@ -7,6 +7,7 @@ export default function requireAuth(req, res, next) {
     return res
       .status(404)
       .json({ errors: { authorization: 'You must be loggin first' } });
+
   let { token } = cookies;
 
   // check if token exist
