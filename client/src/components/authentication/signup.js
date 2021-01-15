@@ -13,6 +13,8 @@ import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import { Button } from '@material-ui/core';
 import LoginWithGoogle from './googleLogin';
 import { Link } from 'react-router-dom';
+import axios from '../../api/index';
+import Cookies from 'js-cookie';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,6 +35,8 @@ const useStyles = makeStyles((theme) => ({
 export default function SignupForm() {
   const classes = useStyles();
   const [values, setValues] = React.useState({
+    username: '',
+    email: '',
     password: '',
     showPassword: false,
   });
@@ -49,12 +53,31 @@ export default function SignupForm() {
     event.preventDefault();
   };
 
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (values.username && values.email && values.password) {
+      axios
+        .post('/auth/signup', {
+          email: values.email,
+          username: values.username,
+          password: values.password,
+          confirmationPassword: values.password,
+        })
+        .then((response) => {
+          console.log(response);
+          Cookies.set('jwtToken', response.data.jwtToken);
+        })
+        .catch((err) => console.log(err));
+    }
+  };
+
   return (
     <section>
       <div style={{ textAlign: 'center' }}>
         <h1> Signup</h1>
       </div>
-      <form className={classes.root}>
+      <form className={classes.root} onSubmit={handleSubmit}>
         <TextField
           label="Username"
           id="outlined-start-adornment"
@@ -62,6 +85,7 @@ export default function SignupForm() {
           variant="outlined"
           required
           shrink
+          onChange={handleChange('username')}
         />
 
         <TextField
@@ -69,7 +93,9 @@ export default function SignupForm() {
           id="outlined-start-adornment"
           className={clsx(classes.margin, classes.textField)}
           variant="outlined"
+          type="email"
           required
+          onChange={handleChange('email')}
           shrink
         />
 

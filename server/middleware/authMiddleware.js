@@ -2,25 +2,23 @@ import jwt from 'jsonwebtoken';
 
 // auth middle
 export default function requireAuth(req, res, next) {
-  const cookies = req.cookies;
-  if (!cookies)
-    return res
-      .status(404)
-      .json({ errors: { authorization: 'You must be loggin first' } });
+  const { jwtToken } = req.cookies;
+  console.log(req.cookies);
 
-  let { token } = cookies;
+  // console.log(token);
 
   // check if token exist
-  if (token) {
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
+  if (jwtToken) {
+    jwt.verify(jwtToken, process.env.TOKEN_SECRET, (err, decoded) => {
       if (err) {
         return res.status(404).json({ errors: { error: err } });
       }
-      console.log(decoded);
+      req.user = decoded;
       next();
     });
+  } else {
+    return res
+      .status(404)
+      .json({ errors: { authorization: 'You must be loggin first' } });
   }
-  return res
-    .status(404)
-    .json({ errors: { authorization: 'You must be loggin first' } });
 }

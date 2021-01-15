@@ -5,6 +5,7 @@ import cors from 'cors';
 import taskRoutes from './routes/task.js';
 import authRoutes from './routes/auth.js';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 dotenv.config();
 
 const app = express();
@@ -12,6 +13,7 @@ const app = express();
 app.use(bodyParser.json({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 5000;
 

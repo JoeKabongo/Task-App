@@ -19,17 +19,20 @@ function createJWT(email, userId, duration) {
 }
 
 export async function signup(req, res) {
-  const { name, email, password, confirmationPassword } = req.body;
+  const { username, email, password, confirmationPassword } = req.body;
 
   // make sure the request has valid fields
   const errors = [];
-  if (!name) errors.push({ name: 'name is required' });
+  if (!username) errors.push({ username: 'name is required' });
   if (!email) errors.push({ email: 'email is required' });
   if (!password) errors.push({ password: 'password is required' });
   if (password !== confirmationPassword)
     errors.push({ password: 'passwords do not match' });
+
+  console.log(errors);
   if (errors.length > 1) {
-    return res.send(422).json({ errors: erros });
+    console.log('herre???');
+    return res.send(422).json({ errors });
   }
 
   try {
@@ -39,34 +42,42 @@ export async function signup(req, res) {
         .status(422)
         .json({ errors: [{ email: 'Email already taken' }] });
     } else {
-      const newProfile = new Profile({ name, email, password });
+      const newProfile = new Profile({ username, email, password });
 
-      // hashed the user password
-      bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(password, salt, async (err, hash) => {
-          if (err) return res.status(500).json({ errors: { error: err } });
+      const salt = await bcrypt.genSalt(10);
 
-          newProfile.password = hash;
-          await newProfile.save();
+      if (!salt) {
+        console.log('Here baby');
+        return res
+          .status(500)
+          .json({ errors: { error: 'Something went wrong with Bcrypt' } });
+      }
 
-          // create a JWT token for the user
-          const access_token = createJWT(
-            newProfile.email,
-            newProfile._id,
-            tokenDuration
-          );
+      const hashedPassword = await bcrypt.hash(password, salt);
+      if (!hashedPassword) {
+        return res
+          .status(500)
+          .json({ errors: { error: 'Something went wrong with Bcrypt' } });
+      }
 
-          res.cookie('token', access_token, {
-            httpOnly: true,
-            maxAge: tokenDuration * 1000,
-          });
+      newProfile.password = hashedPassword;
+      await newProfile.save();
 
-          return res.status(200).json({
-            success: true,
-            token: access_token,
-            userId: newProfile._id,
-          });
-        });
+      // create a JWT token for the user
+      const access_token = createJWT(
+        newProfile.email,
+        newProfile._id,
+        tokenDuration
+      );
+
+      console.log('We got here');
+      return res.status(200).json({
+        jwtToken: access_token,
+        user: {
+          id: newProfile._id,
+          username: newProfile.username,
+          email: newProfile.email,
+        },
       });
     }
   } catch (err) {
@@ -93,23 +104,32 @@ export async function login(req, res) {
         .status(404)
         .json({ errors: [{ email: 'User with such email not found' }] });
 
-    // compare password of the user with that of the database
-    bcrypt.compare(password, user.password, (err, match) => {
-      if (err) return res.status(500).json({ errors: [{ error: err }] });
+    // make sure password match
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ error: 'incorrect password' });
 
-      if (!match) return res.status(400).json({ error: 'incorrect password' }); // password do not match
-      const access_token = createJWT(user.email, user._id, tokenDuration); // create a JWT token for the user
-      return res.status(200).json({
-        success: true,
-        token: access_token,
-        userId: user._id,
-      });
+    // create a JWT token for the user
+    const access_token = createJWT(user.email, user._id, tokenDuration);
+    return res.status(200).json({
+      token: access_token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+      },
     });
   } catch (error) {
     return res.status(500).json({ errors: [{ error: err }] });
   }
 }
 
+export async function getUser(req, res) {
+  console.log(req.user);
+  try {
+    const user = await Profile.findById(req.user.userId).select('-password');
+    return res.json(user);
+  } catch (error) {}
+}
 export function googleLogin(req, res) {
   //   const { tokenId, username } = req.body;
   //   client
