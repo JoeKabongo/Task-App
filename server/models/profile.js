@@ -14,7 +14,7 @@ const profileSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  id_token: String,
+  idToken: String,
   dateJoined: {
     type: Date,
     default: new Date(),

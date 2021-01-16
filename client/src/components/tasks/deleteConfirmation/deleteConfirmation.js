@@ -4,6 +4,7 @@ import useStyles from './style';
 
 export default function DeleteConfirmation(props) {
   const classes = useStyles();
+  console.log(props);
   return (
     <>
       <div className={classes.cover}></div>

@@ -8,6 +8,10 @@ const taskSchema = mongoose.Schema({
     required: true,
   },
   description: String,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Profile',
+  },
   dateCreated: {
     type: Date,
     default: new Date(),

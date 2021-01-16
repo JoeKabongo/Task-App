@@ -3,10 +3,6 @@ import jwt from 'jsonwebtoken';
 // auth middle
 export default function requireAuth(req, res, next) {
   const { jwtToken } = req.cookies;
-  console.log(req.cookies);
-
-  // console.log(token);
-
   // check if token exist
   if (jwtToken) {
     jwt.verify(jwtToken, process.env.TOKEN_SECRET, (err, decoded) => {

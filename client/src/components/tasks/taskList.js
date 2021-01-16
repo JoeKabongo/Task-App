@@ -21,13 +21,20 @@ export default function TaskList() {
     };
 
     fetchData();
+    return () => console.log('clean up');
   }, []);
 
   // change completed status of a task
-  const handleChange = (taskId) => {
+  const handleChange = async (taskId) => {
+    console.log(tasks.find((task) => task._id === taskId));
+    const newTask = await axios.put(
+      `/tasks/udpate/${taskId}`,
+      tasks.find((task) => task._id === taskId)
+    );
+
     setTasks((tasks) => {
       return tasks.map((task) =>
-        task.id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
+        task.id === taskId ? { ...task, newTask } : task
       );
     });
   };
@@ -36,6 +43,7 @@ export default function TaskList() {
   const handleDelete = (taskId) => {
     setToDelete(taskId);
     setDeleteBox(true);
+    console.log(taskId);
   };
 
   // cancel deletion and close confirmation delete box
@@ -44,10 +52,16 @@ export default function TaskList() {
   };
 
   // delete task
-  const deleteTask = () => {
-    const newTasks = tasks.filter((task) => task.id !== toDelete);
-    setTasks(newTasks);
-    setDeleteBox(false);
+  const deleteTask = async () => {
+    try {
+      await axios.delete(`/tasks/delete/${toDelete}`);
+      const newTasks = tasks.filter((task) => task._id !== toDelete);
+      setDeleteBox(false);
+      setTasks(newTasks);
+    } catch (error) {
+      alert('something went wrong');
+      console.log(error);
+    }
   };
 
   return (
@@ -60,9 +74,9 @@ export default function TaskList() {
           return (
             <Task
               task={task}
-              key={task.id}
-              onChange={() => handleChange(task.id)}
-              onDelete={() => handleDelete(task.id)}
+              key={task._id}
+              onChange={() => handleChange(task._id)}
+              onDelete={() => handleDelete(task._id)}
             />
           );
         })}
@@ -89,7 +103,7 @@ export default function TaskList() {
         <DeleteConfirmation
           onCancelDeletion={() => cancelDeletion()}
           onDelete={() => deleteTask()}
-          task={tasks.find((task) => task.id === toDelete)}
+          task={tasks.find((task) => task._id === toDelete)}
         />
       )}
     </section>
