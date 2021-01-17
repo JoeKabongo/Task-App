@@ -41,14 +41,16 @@ export async function deleteTask(req, res) {
 
 // update a user task
 export async function updateTask(req, res) {
-  // const { id } = req.params;
-  // const { name, isCompleted } = req.body;
-  // if (!mongoose.Types.ObjectId.isValid(id))
-  //   return res.status(404).send(`No task with id: ${id}`);
-  // try {
-  //   const newTask = await Task.findByIdAndUpdate(id, { name, isCompleted });
-  //   res.json(newTask);
-  // } catch (error) {
-  //   res.status(500).json({ error: 'Something went wrong' });
-  // }
+  const { id } = req.params;
+  const { name, isCompleted } = req.body;
+  console.log(id);
+  if (!mongoose.Types.ObjectId.isValid(id))
+    return res.status(404).send(`No task with id: ${id}`);
+  try {
+    const newTask = await Task.findByIdAndUpdate(id, { name, isCompleted });
+    res.json(newTask);
+    console.log('Heerrre');
+  } catch (error) {
+    res.status(500).json({ error: 'Something went wrong' });
+  }
 }

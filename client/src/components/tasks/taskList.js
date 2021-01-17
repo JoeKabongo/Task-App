@@ -26,17 +26,16 @@ export default function TaskList() {
 
   // change completed status of a task
   const handleChange = async (taskId) => {
-    console.log(tasks.find((task) => task._id === taskId));
-    const newTask = await axios.put(
-      `/tasks/udpate/${taskId}`,
-      tasks.find((task) => task._id === taskId)
+    const newTasks = tasks.map((task) =>
+      task._id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
     );
 
-    setTasks((tasks) => {
-      return tasks.map((task) =>
-        task.id === taskId ? { ...task, newTask } : task
-      );
-    });
+    await axios.put(
+      `/tasks/update/${taskId}`,
+      newTasks.find((task) => task._id === taskId)
+    );
+
+    setTasks(newTasks);
   };
 
   // open confirmation delete box
