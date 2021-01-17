@@ -11,8 +11,7 @@ export default function TaskList() {
   const [tasks, setTasks] = useState([]);
   const [toDelete, setToDelete] = useState(null);
   const [deleteBox, setDeleteBox] = useState(false);
-
-  const { category } = useParams();
+  const [{ category }, setCategory] = useState(useParams());
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,20 +21,23 @@ export default function TaskList() {
 
     fetchData();
     return () => console.log('clean up');
-  }, []);
+  }, [category]);
 
-  // change completed status of a task
+  // change complete status of a task
   const handleChange = async (taskId) => {
     const newTasks = tasks.map((task) =>
       task._id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
     );
+    try {
+      await axios.put(
+        `/tasks/update/${taskId}`,
+        newTasks.find((task) => task._id === taskId)
+      );
 
-    await axios.put(
-      `/tasks/update/${taskId}`,
-      newTasks.find((task) => task._id === taskId)
-    );
-
-    setTasks(newTasks);
+      setTasks(newTasks);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // open confirmation delete box
@@ -88,9 +90,9 @@ export default function TaskList() {
               return (
                 <Task
                   task={task}
-                  key={task.id}
-                  onChange={() => handleChange(task.id)}
-                  onDelete={() => handleDelete(task.id)}
+                  key={task._id}
+                  onChange={() => handleChange(task._id)}
+                  onDelete={() => handleDelete(task._id)}
                 />
               );
             })}
