@@ -27,7 +27,7 @@ export default function AddTaskForm({ tasks, setTasks }) {
       axios
         .post('/tasks/create', newTask)
         .then((res) => {
-          setTasks([newTask, ...tasks]);
+          setTasks('tasks', [newTask, ...tasks]);
           setTextValue('');
           console.log(res);
           console.log(res.data);

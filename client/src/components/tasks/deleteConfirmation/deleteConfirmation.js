@@ -4,23 +4,14 @@ import useStyles from './style';
 
 export default function DeleteConfirmation(props) {
   const classes = useStyles();
-  console.log(props);
+  const { task, show } = props;
+
   return (
     <>
-      <div className={classes.cover}></div>
-      <div
-        className={classes.root}
-        style={{
-          position: 'fixed',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: '#fff',
-          padding: '20px',
-          zIndex: '3',
-        }}
-      >
+      <div className={show ? `${classes.cover}` : `${classes.hide}`}></div>
+      <div className={show ? `${classes.root}` : `${classes.hide}`}>
         <p>
-          <b> "{props.task.name}"</b> will be deleted permanetly
+          <b> {task && task.name}</b> will be deleted permanetly
         </p>
         <Button variant="contained" onClick={() => props.onCancelDeletion()}>
           Cancel

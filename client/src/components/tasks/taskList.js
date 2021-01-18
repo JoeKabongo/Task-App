@@ -1,31 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import axios from '../../api/index';
 
 import Task from './task/task';
-import AddTaskForm from './addTask/addTask';
+import AddTaskForm from './addTaskForm/addTask';
 import DeleteConfirmation from './deleteConfirmation/deleteConfirmation';
+import { TaskDetail } from './taskDetail/taskDetail';
 
-export default function TaskList() {
-  const [tasks, setTasks] = useState([]);
-  const [toDelete, setToDelete] = useState(null);
-  const [deleteBox, setDeleteBox] = useState(false);
-  const [{ category }, setCategory] = useState(useParams());
+export default function TaskList(props) {
+  const [state, setState] = useState({
+    tasks: [],
+    isLoading: true,
+    showDeleteConfirmation: false,
+    showTaskDetail: false,
+    taskToDelete: null,
+    category: useParams(),
+  });
 
   useEffect(() => {
     const fetchData = async () => {
-      const request = await axios.get('/tasks');
-      setTasks(request.data);
+      try {
+        const request = await axios.get('/tasks');
+        setState({ ...state, tasks: request.data, isLoading: false });
+      } catch (error) {
+        console.log(error);
+      }
     };
 
     fetchData();
     return () => console.log('clean up');
-  }, [category]);
+  }, [state.category]);
 
+  const updateState = (name, value) => {
+    setState({ ...state, [name]: value });
+  };
   // change complete status of a task
   const handleChange = async (taskId) => {
-    const newTasks = tasks.map((task) =>
+    const newTasks = state.tasks.map((task) =>
       task._id === taskId ? { ...task, isCompleted: !task.isCompleted } : task
     );
     try {
@@ -34,7 +47,7 @@ export default function TaskList() {
         newTasks.find((task) => task._id === taskId)
       );
 
-      setTasks(newTasks);
+      setState({ ...state, tasks: newTasks });
     } catch (error) {
       console.log(error);
     }
@@ -42,25 +55,23 @@ export default function TaskList() {
 
   // open confirmation delete box
   const handleDelete = (taskId) => {
-    setToDelete(taskId);
-    setDeleteBox(true);
-    console.log(taskId);
+    setState({ ...state, taskToDelete: taskId, showDeleteConfirmation: true });
   };
 
   // cancel deletion and close confirmation delete box
   const cancelDeletion = () => {
-    setDeleteBox(false);
+    setState({ ...state, showDeleteConfirmation: false });
   };
 
   // delete task
   const deleteTask = async () => {
     try {
-      await axios.delete(`/tasks/delete/${toDelete}`);
-      const newTasks = tasks.filter((task) => task._id !== toDelete);
-      setDeleteBox(false);
-      setTasks(newTasks);
+      await axios.delete(`/tasks/delete/${state.taskToDelete}`);
+      const newTasks = state.tasks.filter(
+        (task) => task._id !== state.taskToDelete
+      );
+      setState({ ...state, tasks: newTasks, showDeleteConfirmation: false });
     } catch (error) {
-      alert('something went wrong');
       console.log(error);
     }
   };
@@ -68,8 +79,10 @@ export default function TaskList() {
   return (
     <section style={{ padding: '15px' }}>
       <h1> All Task</h1>
-      <AddTaskForm setTasks={setTasks} tasks={tasks} />
-      {tasks
+      <AddTaskForm setTasks={updateState} tasks={state.tasks} />
+      {state.isLoading && <CircularProgress />}
+
+      {state.tasks
         .filter((task) => !task.isCompleted)
         .map((task) => {
           return (
@@ -81,10 +94,10 @@ export default function TaskList() {
             />
           );
         })}
-      {tasks.filter((task) => task.isCompleted).length !== 0 ? (
+      {state.tasks.filter((task) => task.isCompleted).length !== 0 ? (
         <section>
           <h3> Completed </h3>
-          {tasks
+          {state.tasks
             .filter((task) => task.isCompleted)
             .map((task) => {
               return (
@@ -100,13 +113,13 @@ export default function TaskList() {
       ) : (
         <br />
       )}
-      {deleteBox && (
-        <DeleteConfirmation
-          onCancelDeletion={() => cancelDeletion()}
-          onDelete={() => deleteTask()}
-          task={tasks.find((task) => task._id === toDelete)}
-        />
-      )}
+      <DeleteConfirmation
+        show={state.showDeleteConfirmation}
+        onCancelDeletion={() => cancelDeletion()}
+        onDelete={() => deleteTask()}
+        task={state.tasks.find((task) => task._id === state.taskToDelete)}
+      />
+      <TaskDetail />
     </section>
   );
 }

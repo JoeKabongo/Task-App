@@ -19,7 +19,7 @@ export default function App() {
             <SignupForm />
           </Route>
           <Route exact path="/:category">
-            <TaskList />
+            <TaskList another=":category" />
           </Route>
           <Route path="*">
             <ErrorPage />

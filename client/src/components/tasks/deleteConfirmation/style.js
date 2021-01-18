@@ -2,10 +2,17 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    position: 'fixed',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    background: '#fff',
+    padding: '20px',
+    zIndex: '3',
     '& > *': {
       margin: theme.spacing(1),
     },
   },
+
   cover: {
     position: 'fixed',
     top: 0,
@@ -16,6 +23,9 @@ const useStyles = makeStyles((theme) => ({
     opacity: 0.3,
     zIndex: '2',
     background: '#000',
+  },
+  hide: {
+    display: 'none',
   },
 }));
 
