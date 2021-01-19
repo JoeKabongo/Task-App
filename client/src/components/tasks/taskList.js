@@ -19,6 +19,8 @@ export default function TaskList(props) {
     category: useParams(),
   });
 
+  console.log(state.showTaskDetail);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -76,6 +78,15 @@ export default function TaskList(props) {
     }
   };
 
+  // alert task detail window
+  const toggleDetailWindow = (taskId) => {
+    setState({
+      ...state,
+      showTaskDetail: !state.showTaskDetail,
+      taskToShowId: taskId,
+    });
+  };
+
   return (
     <section style={{ padding: '15px' }}>
       <h1> All Task</h1>
@@ -89,6 +100,7 @@ export default function TaskList(props) {
             <Task
               task={task}
               key={task._id}
+              showDetail={() => toggleDetailWindow(task._id)}
               onChange={() => handleChange(task._id)}
               onDelete={() => handleDelete(task._id)}
             />
@@ -106,6 +118,7 @@ export default function TaskList(props) {
                   key={task._id}
                   onChange={() => handleChange(task._id)}
                   onDelete={() => handleDelete(task._id)}
+                  showDetail={() => toggleDetailWindow(task._id)}
                 />
               );
             })}
@@ -119,7 +132,11 @@ export default function TaskList(props) {
         onDelete={() => deleteTask()}
         task={state.tasks.find((task) => task._id === state.taskToDelete)}
       />
-      <TaskDetail />
+      <TaskDetail
+        show={state.showTaskDetail}
+        task={state.tasks.find((task) => task._id === state.taskToShowId)}
+        closeDetail={() => toggleDetailWindow(state.taskToShowId)}
+      />
     </section>
   );
 }

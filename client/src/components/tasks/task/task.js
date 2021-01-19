@@ -26,7 +26,7 @@ export default function Task(props) {
         <IconButton aria-label="delete" onClick={() => props.onDelete()}>
           <DeleteOutlineOutlinedIcon fontSize="inherit" />
         </IconButton>
-        <IconButton>
+        <IconButton onClick={() => props.showDetail()}>
           <InfoOutlinedIcon fontSize="inherit" />
         </IconButton>
       </div>
