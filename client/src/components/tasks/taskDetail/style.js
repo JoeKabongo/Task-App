@@ -4,6 +4,7 @@ const useStyles = makeStyles((theme) => ({
   root: {
     position: 'fixed',
     left: '50%',
+    width: '50%',
     top: '50%',
     transform: 'translate(-50%, -50%)',
     background: '#fff',
@@ -27,6 +28,16 @@ const useStyles = makeStyles((theme) => ({
   },
   hide: {
     display: 'none',
+  },
+
+  margin: {
+    margin: theme.spacing(1),
+  },
+  withoutLabel: {
+    marginTop: theme.spacing(3),
+  },
+  textField: {
+    width: '25ch',
   },
 }));
 

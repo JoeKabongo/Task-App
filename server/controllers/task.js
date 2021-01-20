@@ -19,6 +19,7 @@ export async function createTask(req, res) {
     const newTask = new Task({ name, userId: req.user.userId });
     try {
       await newTask.save();
+      console.log(newTask, newTask);
       res.status(201).json(newTask);
     } catch (error) {
       res.status(409).json({ error: error.message });
@@ -42,15 +43,20 @@ export async function deleteTask(req, res) {
 // update a user task
 export async function updateTask(req, res) {
   const { id } = req.params;
-  const { name, isCompleted } = req.body;
-  console.log(id);
-  if (!mongoose.Types.ObjectId.isValid(id))
+  const { name, isCompleted, description, dueDate } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).send(`No task with id: ${id}`);
+  }
   try {
-    const newTask = await Task.findByIdAndUpdate(id, { name, isCompleted });
-    res.json(newTask);
-    console.log('Heerrre');
+    const newTask = await Task.findByIdAndUpdate(id, {
+      name,
+      isCompleted,
+      description,
+      dueDate,
+    });
+    return res.json(newTask);
   } catch (error) {
-    res.status(500).json({ error: 'Something went wrong' });
+    return res.status(500).json({ error: 'Something went wrong' });
   }
 }

@@ -19,8 +19,6 @@ export default function TaskList(props) {
     category: useParams(),
   });
 
-  console.log(state.showTaskDetail);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -33,7 +31,7 @@ export default function TaskList(props) {
 
     fetchData();
     return () => console.log('clean up');
-  }, [state.category]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateState = (name, value) => {
     setState({ ...state, [name]: value });
@@ -136,6 +134,8 @@ export default function TaskList(props) {
         show={state.showTaskDetail}
         task={state.tasks.find((task) => task._id === state.taskToShowId)}
         closeDetail={() => toggleDetailWindow(state.taskToShowId)}
+        setTasks={updateState}
+        allTasks={state.tasks}
       />
     </section>
   );
