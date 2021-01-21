@@ -4,11 +4,11 @@ import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import axios from '../../../api/index';
 const useStyles = makeStyles((theme) => ({
-  root: {
-    '& > *': {
-      margin: theme.spacing(1),
-    },
-  },
+  // root: {
+  //   '& > *': {
+  //     margin: theme.spacing(1),
+  //   },
+  // },
 }));
 
 export default function AddTaskForm({ tasks, setTasks }) {
@@ -53,7 +53,12 @@ export default function AddTaskForm({ tasks, setTasks }) {
         required
       />
 
-      <Button variant="contained" color="secondary" type="submit">
+      <Button
+        variant="contained"
+        color="secondary"
+        type="submit"
+        style={{ marginTop: '10px', marginBottom: '10px' }}
+      >
         Add
       </Button>
     </form>

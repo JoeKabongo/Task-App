@@ -26,12 +26,12 @@ export function TaskDetail(props) {
     name: '',
     isCompleted: false,
     dueDate: new Date(),
-    description: '',
+    description: ' ',
   });
   const [show, setShow] = React.useState(false);
 
   React.useEffect(() => {
-    if (props.show) setTask(props.task);
+    if (props.task) setTask(props.task);
     setShow(props.show);
   }, [props]);
 
@@ -40,13 +40,13 @@ export function TaskDetail(props) {
   };
 
   const handleTaskChange = (name, value) => {
+    console.log(name, value);
     const newTask = { ...task, [name]: value };
     setTask(newTask);
   };
 
   const saveTask = async (e) => {
     e.preventDefault();
-    console.log(task);
     await axios.put(`/tasks/update/${task._id}`, { ...task });
     const newTasks = props.allTasks.map((element) =>
       element._id === task._id ? task : element
@@ -58,104 +58,106 @@ export function TaskDetail(props) {
     <>
       <div className={show ? `${classes.cover}` : `${classes.hide}`}> </div>
       <div className={show ? `${classes.root}` : `${classes.hide}`}>
-        <h2 className={classes.margin}> {task && task.name} </h2>
-        <form onSubmit={saveTask}>
-          <FormControl fullWidth className={classes.margin} variant="filled">
-            <InputLabel htmlFor="filled-adornment-amount">Name</InputLabel>
-            <FilledInput
-              id="filled-adornment-amount"
-              value={task.name}
-              onChange={(e) => handleTaskChange('name', e.target.value)}
-              inputProps={{ maxLength: 100 }}
-            />
-          </FormControl>
-          <MuiPickersUtilsProvider
-            utils={DateFnsUtils}
-            fullWidth
-            variant="filled"
-          >
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="MM/dd/yyyy"
-              margin="normal"
-              id="date-picker-inline"
-              label="Due Date"
-              value={task.dueDat}
-              onChange={(e) => handleTaskChange('dueDate', e)}
-              KeyboardButtonProps={{
-                'aria-label': 'change date',
-              }}
-              className={classes.margin}
-            />
-          </MuiPickersUtilsProvider>
-
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={task.isCompleted}
-                name="checkedB"
-                color="secondary"
-                onChange={(e) =>
-                  handleTaskChange('isCompleted', e.target.checked)
-                }
+        <div className={classes.container}>
+          <h2 className={classes.margin}> {task && task.name} </h2>
+          <form onSubmit={saveTask}>
+            <FormControl fullWidth className={classes.margin} variant="filled">
+              <InputLabel htmlFor="filled-adornment-amount">Name</InputLabel>
+              <FilledInput
+                id="filled-adornment-amount"
+                value={task.name}
+                onChange={(e) => handleTaskChange('name', e.target.value)}
+                inputProps={{ maxLength: 100 }}
               />
-            }
-            label="Mark complete"
-            className={classes.margin}
-          />
-
-          <FormControl variant="filled" className={classes.margin} fullWidth>
-            <InputLabel id="demo-simple-select-filled-label">
-              Category
-            </InputLabel>
-            <Select
-              labelId="demo-simple-select-filled-label"
-              id="demo-simple-select-filled"
-              value={age}
-              onChange={handleChange}
+            </FormControl>
+            <MuiPickersUtilsProvider
+              utils={DateFnsUtils}
               fullWidth
+              variant="filled"
             >
-              <MenuItem value="">
-                <em>None</em>
-              </MenuItem>
-              <MenuItem value={10}>Ten</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
-            </Select>
-          </FormControl>
+              <KeyboardDatePicker
+                disableToolbar
+                variant="inline"
+                format="MM/dd/yyyy"
+                margin="normal"
+                id="date-picker-inline"
+                label="Due Date"
+                value={task.dueDate}
+                onChange={(e) => handleTaskChange('dueDate', e)}
+                KeyboardButtonProps={{
+                  'aria-label': 'change date',
+                }}
+                className={classes.margin}
+              />
+            </MuiPickersUtilsProvider>
 
-          <TextField
-            className={classes.margin}
-            id="filled-multiline-static"
-            label="Description"
-            value={task.description}
-            multiline
-            rows={4}
-            variant="filled"
-            fullWidth
-            onChange={(e) => handleTaskChange('description', e.target.value)}
-          />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={task.isCompleted}
+                  name="checkedB"
+                  color="secondary"
+                  onChange={(e) =>
+                    handleTaskChange('isCompleted', e.target.checked)
+                  }
+                />
+              }
+              label="Mark complete"
+              className={classes.margin}
+            />
 
-          <div>
-            <Button
-              variant="contained"
-              color="secondary"
-              onClick={() => props.closeDetail()}
+            <FormControl variant="filled" className={classes.margin} fullWidth>
+              <InputLabel id="demo-simple-select-filled-label">
+                Category
+              </InputLabel>
+              <Select
+                labelId="demo-simple-select-filled-label"
+                id="demo-simple-select-filled"
+                value={age}
+                onChange={handleChange}
+                fullWidth
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                <MenuItem value={10}>Ten</MenuItem>
+                <MenuItem value={20}>Twenty</MenuItem>
+                <MenuItem value={30}>Thirty</MenuItem>
+              </Select>
+            </FormControl>
+
+            <TextField
               className={classes.margin}
-            >
-              Close
-            </Button>
-            <Button
-              variant="contained"
-              color="secondary"
-              type="submit"
-              className={classes.margin}
-            >
-              Save
-            </Button>
-          </div>
-        </form>
+              id="filled-multiline-static"
+              label="Description"
+              value={task.description}
+              multiline
+              rows={4}
+              variant="filled"
+              fullWidth
+              onChange={(e) => handleTaskChange('description', e.target.value)}
+            />
+
+            <div>
+              <Button
+                variant="contained"
+                color="secondary"
+                onClick={() => props.closeDetail()}
+                className={classes.margin}
+              >
+                Close
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                type="submit"
+                className={classes.margin}
+              >
+                Save
+              </Button>
+            </div>
+          </form>
+        </div>
       </div>
     </>
   );

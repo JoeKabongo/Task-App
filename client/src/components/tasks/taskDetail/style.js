@@ -3,16 +3,25 @@ import { makeStyles } from '@material-ui/core/styles';
 const useStyles = makeStyles((theme) => ({
   root: {
     position: 'fixed',
-    left: '50%',
-    width: '50%',
-    top: '50%',
-    transform: 'translate(-50%, -50%)',
-    background: '#fff',
-    padding: '20px',
-    zIndex: '3',
+    top: '0',
+    left: '0',
+    height: '100%',
+    width: '100%',
     '& > *': {
       margin: theme.spacing(1),
     },
+    zIndex: '10',
+    display: 'flex',
+    // flexFlow: 'column nowrap',
+    justifyContent: 'center' /* aligns on vertical for column */,
+    alignItems: 'center' /* aligns on horizontal for column */,
+  },
+
+  container: {
+    backgroundColor: 'white',
+    width: 'auto',
+    padding: '30px',
+    width: '500px',
   },
 
   cover: {
@@ -23,7 +32,6 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     backgroundColor: 'none',
     opacity: 0.3,
-    zIndex: '2',
     background: '#000',
   },
   hide: {

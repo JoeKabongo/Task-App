@@ -34,7 +34,7 @@ export default function TypographyMenu() {
           </ListItemIcon>
           <Typography variant="inherit"> Today </Typography>
         </MenuItem>
-        <MenuItem className={classes.item}>
+        {/* <MenuItem className={classes.item}>
           <Link to="/School" className={classes.link}>
             <ListItemIcon>
               <ClassIcon fontSize="small" />
@@ -49,21 +49,13 @@ export default function TypographyMenu() {
           <Typography variant="inherit" noWrap>
             Shopping
           </Typography>
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem className={classes.item}>
           <ListItemIcon>
             <AddIcon fontSize="small" />
           </ListItemIcon>
           <Typography variant="inherit" noWrap>
             Add Category
-          </Typography>
-        </MenuItem>
-        <MenuItem className={classes.item}>
-          <ListItemIcon>
-            <AddIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit" noWrap>
-            Add Task
           </Typography>
         </MenuItem>
       </MenuList>

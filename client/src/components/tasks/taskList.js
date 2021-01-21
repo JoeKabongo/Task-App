@@ -86,57 +86,65 @@ export default function TaskList(props) {
   };
 
   return (
-    <section style={{ padding: '15px' }}>
-      <h1> All Task</h1>
-      <AddTaskForm setTasks={updateState} tasks={state.tasks} />
-      {state.isLoading && <CircularProgress />}
+    <>
+      <section>
+        <div>
+          <h1> All Tasks</h1>
 
-      {state.tasks
-        .filter((task) => !task.isCompleted)
-        .map((task) => {
-          return (
-            <Task
-              task={task}
-              key={task._id}
-              showDetail={() => toggleDetailWindow(task._id)}
-              onChange={() => handleChange(task._id)}
-              onDelete={() => handleDelete(task._id)}
-            />
-          );
-        })}
-      {state.tasks.filter((task) => task.isCompleted).length !== 0 ? (
-        <section>
-          <h3> Completed </h3>
+          <AddTaskForm setTasks={updateState} tasks={state.tasks} />
+          {state.isLoading && <CircularProgress />}
+
           {state.tasks
-            .filter((task) => task.isCompleted)
+            .filter((task) => !task.isCompleted)
             .map((task) => {
               return (
                 <Task
                   task={task}
                   key={task._id}
+                  showDetail={() => toggleDetailWindow(task._id)}
                   onChange={() => handleChange(task._id)}
                   onDelete={() => handleDelete(task._id)}
-                  showDetail={() => toggleDetailWindow(task._id)}
                 />
               );
             })}
-        </section>
-      ) : (
-        <br />
-      )}
+          {state.tasks.filter((task) => task.isCompleted).length !== 0 ? (
+            <section>
+              <h3> Completed </h3>
+              {state.tasks
+                .filter((task) => task.isCompleted)
+                .map((task) => {
+                  return (
+                    <Task
+                      task={task}
+                      key={task._id}
+                      onChange={() => handleChange(task._id)}
+                      onDelete={() => handleDelete(task._id)}
+                      showDetail={() => toggleDetailWindow(task._id)}
+                    />
+                  );
+                })}
+            </section>
+          ) : (
+            <br />
+          )}
+        </div>
+        <div>
+          <TaskDetail
+            show={state.showTaskDetail}
+            task={state.tasks.find((task) => task._id === state.taskToShowId)}
+            closeDetail={() => toggleDetailWindow(state.taskToShowId)}
+            setTasks={updateState}
+            allTasks={state.tasks}
+          />
+        </div>
+      </section>
+
       <DeleteConfirmation
         show={state.showDeleteConfirmation}
         onCancelDeletion={() => cancelDeletion()}
         onDelete={() => deleteTask()}
         task={state.tasks.find((task) => task._id === state.taskToDelete)}
       />
-      <TaskDetail
-        show={state.showTaskDetail}
-        task={state.tasks.find((task) => task._id === state.taskToShowId)}
-        closeDetail={() => toggleDetailWindow(state.taskToShowId)}
-        setTasks={updateState}
-        allTasks={state.tasks}
-      />
-    </section>
+    </>
   );
 }
