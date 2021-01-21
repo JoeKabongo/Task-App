@@ -19,7 +19,6 @@ const useStyles = makeStyles((theme) => ({
 
   container: {
     backgroundColor: 'white',
-    width: 'auto',
     padding: '30px',
     width: '500px',
   },

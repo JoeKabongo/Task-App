@@ -48,6 +48,8 @@ export async function updateTask(req, res) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).send(`No task with id: ${id}`);
   }
+
+  console.log(dueDate);
   try {
     const newTask = await Task.findByIdAndUpdate(id, {
       name,

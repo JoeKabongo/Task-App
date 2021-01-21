@@ -6,6 +6,7 @@ import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import style from './style';
 import CalendarTodayOutlinedIcon from '@material-ui/icons/CalendarTodayOutlined';
+import formatDate from '../dateFormat';
 
 export default function Task(props) {
   const { name, isCompleted, dueDate } = props.task;
@@ -62,29 +63,4 @@ export default function Task(props) {
       </div>
     </div>
   );
-}
-
-function formatDate(taskDate) {
-  const days = ['Sun', 'Mon', 'Tues', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  const date = taskDate.getDate();
-  const dayOfTheWeek = days[taskDate.getDay()];
-  const month = months[taskDate.getMonth()];
-  const year = taskDate.getYear();
-
-  const status = new Date() <= taskDate ? 'Due ' : 'Overdue ';
-  return status + dayOfTheWeek + ', ' + month + date;
 }

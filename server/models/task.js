@@ -18,7 +18,6 @@ const taskSchema = mongoose.Schema({
   },
   dueDate: {
     type: Date,
-    default: new Date(),
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,

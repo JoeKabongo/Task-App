@@ -7,7 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import HomeIcon from '@material-ui/icons/Home';
 import TodayIcon from '@material-ui/icons/Today';
 import AddIcon from '@material-ui/icons/Add';
-import ClassIcon from '@material-ui/icons/Class';
+// import ClassIcon from '@material-ui/icons/Class';
 import useStyles from './style';
 import { Link } from 'react-router-dom';
 
