@@ -46,7 +46,7 @@ export default function AddTaskForm({ tasks, setTasks }) {
       <TextField
         id="standard-basic"
         label="Add Task"
-        color="secondary"
+        color="primary"
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}
         fullWidth
@@ -55,7 +55,7 @@ export default function AddTaskForm({ tasks, setTasks }) {
 
       <Button
         variant="contained"
-        color="secondary"
+        color="primary"
         type="submit"
         style={{ marginTop: '10px', marginBottom: '10px' }}
       >

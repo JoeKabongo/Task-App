@@ -27,14 +27,10 @@ const useStyles = makeStyles((theme) => ({
 export default function ButtonAppBar(props) {
   const classes = useStyles();
 
+  const { isLoggedIn, logout } = props;
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-
-  const logout = () => {
-    Cookies.remove('jwtToken');
-    props.setUser(null);
-    setAnchorEl(null);
-  };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -59,7 +55,7 @@ export default function ButtonAppBar(props) {
           <Typography variant="h6" className={classes.title}>
             Task Tracker
           </Typography>
-          {!props.user && (
+          {!isLoggedIn && (
             <div>
               <Button color="inherit" component={Link} to="/login">
                 Login
@@ -70,7 +66,7 @@ export default function ButtonAppBar(props) {
             </div>
           )}
 
-          {props.user && (
+          {isLoggedIn && (
             <div>
               <IconButton
                 aria-label="account of current user"

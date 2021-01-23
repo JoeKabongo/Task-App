@@ -7,7 +7,8 @@ export async function getTasks(req, res) {
     const tasks = await Task.find({ userId: req.user.userId });
     return res.status(200).json(tasks);
   } catch (error) {
-    return res.status(404).json({ message: error.message });
+    console.log(error);
+    return res.status(404).json({ errors: [error] });
   }
 }
 

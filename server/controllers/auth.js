@@ -106,7 +106,7 @@ export async function login(req, res) {
     // create a JWT token for the user
     const access_token = createJWT(user.email, user._id, tokenDuration);
     return res.status(200).json({
-      token: access_token,
+      jwtToken: access_token,
       user: {
         id: user._id,
         username: user.username,

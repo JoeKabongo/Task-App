@@ -14,3 +14,13 @@ export async function createCategory(req, res) {
     return res.status(500).json(error);
   }
 }
+
+export async function getCategories(req, res) {
+  try {
+    const categories = await Category.find({ userId: req.user.userId });
+    return res.status(200).json(categories);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ errors: error });
+  }
+}

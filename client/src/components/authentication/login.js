@@ -12,13 +12,13 @@ import { Button } from '@material-ui/core';
 import LoginWithGoogle from './googleLogin';
 import { Link } from 'react-router-dom';
 import axios from '../../api/index';
-import Cookies from 'js-cookie';
 import { Redirect } from 'react-router-dom';
 import useStyles from './style';
-import Alert from './alertMessage';
+import Alert from '../alertMessage/alert';
 
 export default function LoginForm(props) {
   const classes = useStyles();
+  const { saveUser } = props;
   const [values, setValues] = React.useState({
     email: '',
     password: '',
@@ -57,9 +57,8 @@ export default function LoginForm(props) {
           password: values.password,
         })
         .then((response) => {
-          Cookies.set('jwtToken', response.data.jwtToken);
-          localStorage.setItem('user', response.data.user);
-          props.setUser(response.data.user);
+          const { jwtToken, user } = response.data;
+          saveUser(jwtToken, user);
           return <Redirect to="/" />;
         })
         .catch((err) => {
@@ -87,7 +86,6 @@ export default function LoginForm(props) {
           type="email"
           required
           onChange={handleChange('email')}
-          shrink
         />
 
         <FormControl

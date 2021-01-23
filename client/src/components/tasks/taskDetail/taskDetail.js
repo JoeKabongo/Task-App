@@ -141,7 +141,7 @@ export function TaskDetail(props) {
             <div>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 onClick={() => props.closeDetail()}
                 className={classes.margin}
               >
@@ -149,7 +149,7 @@ export function TaskDetail(props) {
               </Button>
               <Button
                 variant="contained"
-                color="secondary"
+                color="primary"
                 type="submit"
                 className={classes.margin}
               >

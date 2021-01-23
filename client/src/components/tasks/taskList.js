@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
-
 import axios from '../../api/index';
-
 import Task from './task/task';
 import AddTaskForm from './addTaskForm/addTask';
 import DeleteConfirmation from './deleteConfirmation/deleteConfirmation';
 import { TaskDetail } from './taskDetail/taskDetail';
+import CategorySelection from './category/categorySelection';
 
 export default function TaskList(props) {
   const [state, setState] = useState({
@@ -16,15 +15,19 @@ export default function TaskList(props) {
     showDeleteConfirmation: false,
     showTaskDetail: false,
     taskToDelete: null,
-    category: useParams(),
+    category: 'All',
   });
 
   useEffect(() => {
     const fetchData = async () => {
+      // fetch the users tasks
       try {
+        console.log('function called');
         const request = await axios.get('/tasks');
         setState({ ...state, tasks: request.data, isLoading: false });
+        console.log('here');
       } catch (error) {
+        console.log(error.data);
         console.log(error);
       }
     };
@@ -89,7 +92,10 @@ export default function TaskList(props) {
     <>
       <section>
         <div>
-          <h1> All Tasks</h1>
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <h1> All Tasks</h1>
+            <CategorySelection />
+          </div>
 
           <AddTaskForm setTasks={updateState} tasks={state.tasks} />
           {state.isLoading && <CircularProgress />}

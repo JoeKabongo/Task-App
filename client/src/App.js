@@ -5,6 +5,7 @@ import {
   Switch,
   Redirect,
 } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 import Navbar from '../src/components/navBar/navbar';
 import TaskList from '../src/components/tasks/taskList';
@@ -14,26 +15,51 @@ import LoginForm from '../src/components/authentication/login';
 
 export default function App() {
   const [user, setUser] = React.useState(null);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+  const logoutUser = () => {
+    Cookies.remove('jwtToken');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+  };
+
+  const saveUser = (token, user) => {
+    Cookies.set('jwtToken', token);
+    localStorage.setItem('user', user);
+    setIsLoggedIn(true);
+  };
 
   React.useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
-    if (loggedInUser) setUser(user);
+    if (loggedInUser !== null) {
+      setUser(user);
+      setIsLoggedIn(true);
+    }
+    console.log(loggedInUser !== null);
   }, []);
 
   return (
     <Router>
-      <Navbar user={user} setUser={setUser} />
+      <Navbar isLoggedIn={isLoggedIn} logout={logoutUser} />
       <main style={{ marginLeft: '150px', marginRight: '150px' }}>
         <Switch>
           <Route exact path="/">
-            {user ? <TaskList /> : <Redirect to="/signup" />}
+            {isLoggedIn ? <TaskList /> : <Redirect to="/signup" />}
           </Route>
           <Route exact path="/signup">
-            {!user ? <SignupForm setUser={setUser} /> : <Redirect to="/" />}
+            {!isLoggedIn ? (
+              <SignupForm saveUser={saveUser} />
+            ) : (
+              <Redirect to="/" />
+            )}
           </Route>
 
           <Route exact path="/login">
-            {!user ? <LoginForm setUser={setUser} /> : <Redirect to="/" />}
+            {!isLoggedIn ? (
+              <LoginForm saveUser={saveUser} />
+            ) : (
+              <Redirect to="/" />
+            )}
           </Route>
 
           <Route path="*">

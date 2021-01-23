@@ -15,10 +15,12 @@ import axios from '../../api/index';
 import Cookies from 'js-cookie';
 import { Redirect } from 'react-router-dom';
 import useStyles from './style';
-import Alert from './alertMessage';
+import Alert from '../alertMessage/alert';
 
-export default function SignupForm({ setUser }) {
+export default function SignupForm(props) {
   const classes = useStyles();
+  const { saveUser } = props;
+
   const [values, setValues] = React.useState({
     username: '',
     email: '',
@@ -59,10 +61,9 @@ export default function SignupForm({ setUser }) {
           confirmationPassword: values.password,
         })
         .then((response) => {
-          // save user information and go to the frontend page
-          Cookies.set('jwtToken', response.data.jwtToken);
-          localStorage.setItem('user', response.data.user);
-          setUser(response.data.user);
+          // save user information and go to the home page
+          const { jwtToken, user } = response.data;
+          saveUser(jwtToken, user);
           return <Redirect to="/" />;
         })
         .catch((err) => {
