@@ -14,13 +14,11 @@ import LoginWithGoogle from './googleLogin';
 import { Link } from 'react-router-dom';
 import axios from '../../api/index';
 import Cookies from 'js-cookie';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from 'react-router-dom';
+import MuiAlert from '@material-ui/lab/Alert';
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 const useStyles = makeStyles((theme) => ({
   root: {
     display: 'flex',
@@ -37,17 +35,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function SignupForm({ setUser }) {
+export default function LoginForm() {
   const classes = useStyles();
   const [values, setValues] = React.useState({
-    username: '',
     email: '',
     password: '',
     showPassword: false,
+    errorMessages: [],
   });
 
   const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+    if (values.errorMessages) {
+      setValues({ ...values, [prop]: event.target.value, errorMessages: [] });
+    } else {
+      setValues({ ...values, [prop]: event.target.value });
+    }
   };
 
   const handleClickShowPassword = () => {
@@ -61,40 +63,29 @@ export default function SignupForm({ setUser }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    if (values.username && values.email && values.password) {
+    if (values.email && values.password) {
       axios
-        .post('/auth/signup', {
+        .post('/auth/login', {
           email: values.email,
-          username: values.username,
           password: values.password,
-          confirmationPassword: values.password,
         })
         .then((response) => {
+          console.log(response);
           Cookies.set('jwtToken', response.data.jwtToken);
-          localStorage.setItem('user', response.data.user);
-          setUser(response.data.user);
-          return <Redirect to="/" />;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          console.log(err.response.data.errors);
+          setValues({ ...values, errorMessages: err.response.data.errors });
+        });
     }
   };
 
   return (
     <section>
       <div style={{ textAlign: 'center' }}>
-        <h1> Signup</h1>
+        <h1> Login</h1>
       </div>
       <form className={classes.root} onSubmit={handleSubmit}>
-        <TextField
-          label="Username"
-          id="outlined-start-adornment"
-          className={clsx(classes.margin, classes.textField)}
-          variant="outlined"
-          required
-          shrink
-          onChange={handleChange('username')}
-        />
-
         <TextField
           label="Email"
           id="outlined-start-adornment"
@@ -133,6 +124,9 @@ export default function SignupForm({ setUser }) {
             labelWidth={70}
           />
         </FormControl>
+        {values.errorMessages.map((error) => (
+          <Alert severity="error">{error}</Alert>
+        ))}
 
         <Button
           variant="contained"
@@ -141,10 +135,11 @@ export default function SignupForm({ setUser }) {
           className={classes.margin}
           style={{ display: 'block' }}
         >
-          Signup
+          Login
         </Button>
+
         <p>
-          Have an account already? <Link to="login"> Login Here</Link>
+          Dont have an account? <Link to="signup"> Signup Here</Link>
         </p>
         <LoginWithGoogle />
       </form>

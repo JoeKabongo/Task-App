@@ -1,64 +1,108 @@
 import React from 'react';
-import MenuList from '@material-ui/core/MenuList';
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
+import { makeStyles } from '@material-ui/core/styles';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import HomeIcon from '@material-ui/icons/Home';
-import TodayIcon from '@material-ui/icons/Today';
-import AddIcon from '@material-ui/icons/Add';
-// import ClassIcon from '@material-ui/icons/Class';
-import useStyles from './style';
+import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
+import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Link } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
-export default function TypographyMenu() {
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
+
+export default function ButtonAppBar(props) {
   const classes = useStyles();
-  return (
-    <Paper className={classes.root}>
-      <MenuList>
-        <MenuItem>
-          <Typography variant="h3">To-Do</Typography>
-        </MenuItem>
 
-        <MenuItem className={classes.item}>
-          <Link to="/" className={classes.link}>
-            <ListItemIcon>
-              <HomeIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit">All Tasks</Typography>
-          </Link>
-        </MenuItem>
-        <MenuItem className={classes.item}>
-          <ListItemIcon>
-            <TodayIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit"> Today </Typography>
-        </MenuItem>
-        {/* <MenuItem className={classes.item}>
-          <Link to="/School" className={classes.link}>
-            <ListItemIcon>
-              <ClassIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit">School</Typography>
-          </Link>
-        </MenuItem>
-        <MenuItem className={classes.item}>
-          <ListItemIcon>
-            <ClassIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit" noWrap>
-            Shopping
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const logout = () => {
+    Cookies.remove('jwtToken');
+    props.setUser(null);
+    setAnchorEl(null);
+  };
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <div className={classes.root}>
+      <AppBar position="static">
+        <Toolbar>
+          <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="menu"
+          >
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" className={classes.title}>
+            Task Tracker
           </Typography>
-        </MenuItem> */}
-        <MenuItem className={classes.item}>
-          <ListItemIcon>
-            <AddIcon fontSize="small" />
-          </ListItemIcon>
-          <Typography variant="inherit" noWrap>
-            Add Category
-          </Typography>
-        </MenuItem>
-      </MenuList>
-    </Paper>
+          {!props.user && (
+            <div>
+              <Button color="inherit" component={Link} to="/login">
+                Login
+              </Button>
+              <Button color="inherit" component={Link} to="/signup">
+                Signup
+              </Button>
+            </div>
+          )}
+
+          {props.user && (
+            <div>
+              <IconButton
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <AccountCircle />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={open}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={logout}>Logout</MenuItem>
+              </Menu>
+            </div>
+          )}
+        </Toolbar>
+      </AppBar>
+    </div>
   );
 }

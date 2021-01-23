@@ -2,11 +2,13 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import cors from 'cors';
-import taskRoutes from './routes/task.js';
-import authRoutes from './routes/auth.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 dotenv.config();
+
+import taskRoutes from './routes/task.js';
+import authRoutes from './routes/auth.js';
+import categoryRoutes from './routes/category.js';
 
 const app = express();
 
@@ -33,3 +35,4 @@ mongoose.set('useFindAndModify', false);
 // routes
 app.use('/api/tasks', taskRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/category', categoryRoutes);

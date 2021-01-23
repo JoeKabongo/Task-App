@@ -23,11 +23,10 @@ export async function signup(req, res) {
 
   // make sure the request has valid fields
   const errors = [];
-  if (!username) errors.push({ username: 'name is required' });
-  if (!email) errors.push({ email: 'email is required' });
-  if (!password) errors.push({ password: 'password is required' });
-  if (password !== confirmationPassword)
-    errors.push({ password: 'passwords do not match' });
+  if (!username) errors.push('name is required');
+  if (!email) errors.push('email is required');
+  if (!password) errors.push('password is required');
+  if (password !== confirmationPassword) errors.push('passwords do not match');
 
   console.log(errors);
   if (errors.length > 1) {
@@ -38,9 +37,7 @@ export async function signup(req, res) {
   try {
     const user = await Profile.findOne({ email });
     if (user) {
-      return res
-        .status(422)
-        .json({ errors: [{ email: 'Email already taken' }] });
+      return res.status(422).json({ errors: ['Email already taken'] });
     } else {
       const newProfile = new Profile({ username, email, password });
 
@@ -50,14 +47,14 @@ export async function signup(req, res) {
         console.log('Here baby');
         return res
           .status(500)
-          .json({ errors: { error: 'Something went wrong with Bcrypt' } });
+          .json({ errors: 'Something went wrong with Bcrypt' });
       }
 
       const hashedPassword = await bcrypt.hash(password, salt);
       if (!hashedPassword) {
         return res
           .status(500)
-          .json({ errors: { error: 'Something went wrong with Bcrypt' } });
+          .json({ errors: 'Something went wrong with Bcrypt' });
       }
 
       newProfile.password = hashedPassword;
@@ -70,7 +67,6 @@ export async function signup(req, res) {
         tokenDuration
       );
 
-      console.log('We got here');
       return res.status(200).json({
         jwtToken: access_token,
         user: {
@@ -81,7 +77,7 @@ export async function signup(req, res) {
       });
     }
   } catch (err) {
-    return res.status(500).json({ errors: [{ error: err }] });
+    return res.status(500).json({ errors: err });
   }
 }
 
@@ -90,8 +86,8 @@ export async function login(req, res) {
 
   // check that all required fields are there
   const errors = [];
-  if (!password) errors.push({ name: 'password is required' });
-  if (!email) errors.push({ email: 'email is required' });
+  if (!password) errors.push('password is required');
+  if (!email) errors.push('email is required');
   if (errors.length > 0) return res.status(422).json({ errors: errors });
 
   try {
@@ -102,11 +98,12 @@ export async function login(req, res) {
       return res
         .status(404)
         .status(404)
-        .json({ errors: [{ email: 'User with such email not found' }] });
+        .json({ errors: ['User with such email not found'] });
 
     // make sure password match
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ error: 'incorrect password' });
+    if (!isMatch)
+      return res.status(400).json({ errors: ['incorrect password'] });
 
     // create a JWT token for the user
     const access_token = createJWT(user.email, user._id, tokenDuration);
@@ -119,15 +116,23 @@ export async function login(req, res) {
       },
     });
   } catch (error) {
-    return res.status(500).json({ errors: [{ error: err }] });
+    return res.status(500).json({ errors: err });
   }
 }
 
 export async function getUser(req, res) {
   console.log(req.user);
   try {
-    const user = await Profile.findById(req.user.userId).select('-password');
+    const user = await Profile.findById(req.user.userId);
     return res.json(user);
+  } catch (error) {}
+}
+
+export async function getUserInfo(req, res) {
+  try {
+    const user = await Profile.findById(req.user.userId);
+    const categories = user.categoryList;
+    console.log(categories.l);
   } catch (error) {}
 }
 export function googleLogin(req, res) {
@@ -165,4 +170,9 @@ export function googleLogin(req, res) {
   //     .catch((error) => {
   //       console.log(error);
   //     });
+}
+
+export async function deleteAllUser(req, res) {
+  const all = await Profile.deleteMany({});
+  res.send(all);
 }
