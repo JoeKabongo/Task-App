@@ -5,7 +5,6 @@ import {
   Switch,
   Redirect,
 } from 'react-router-dom';
-import axios from '../src/api/index';
 
 import Navbar from '../src/components/navBar/navbar';
 import TaskList from '../src/components/tasks/taskList';

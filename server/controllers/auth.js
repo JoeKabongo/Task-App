@@ -28,9 +28,7 @@ export async function signup(req, res) {
   if (!password) errors.push('password is required');
   if (password !== confirmationPassword) errors.push('passwords do not match');
 
-  console.log(errors);
   if (errors.length > 1) {
-    console.log('herre???');
     return res.send(422).json({ errors });
   }
 

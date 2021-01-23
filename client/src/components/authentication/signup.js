@@ -1,6 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -14,28 +13,9 @@ import LoginWithGoogle from './googleLogin';
 import { Link } from 'react-router-dom';
 import axios from '../../api/index';
 import Cookies from 'js-cookie';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from 'react-router-dom';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  margin: {
-    margin: theme.spacing(1),
-  },
-
-  textField: {
-    width: '50%',
-  },
-}));
+import { Redirect } from 'react-router-dom';
+import useStyles from './style';
+import Alert from './alertMessage';
 
 export default function SignupForm({ setUser }) {
   const classes = useStyles();
@@ -44,12 +24,20 @@ export default function SignupForm({ setUser }) {
     email: '',
     password: '',
     showPassword: false,
+    errorMessages: [],
   });
 
+  // change a state when a textfield is changed
   const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+    // remove errors message
+    if (values.errorMessages) {
+      setValues({ ...values, [prop]: event.target.value, errorMessages: [] });
+    } else {
+      setValues({ ...values, [prop]: event.target.value });
+    }
   };
 
+  // toggle showing  password field as text
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
@@ -58,6 +46,7 @@ export default function SignupForm({ setUser }) {
     event.preventDefault();
   };
 
+  // submit form
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -70,12 +59,21 @@ export default function SignupForm({ setUser }) {
           confirmationPassword: values.password,
         })
         .then((response) => {
+          // save user information and go to the frontend page
           Cookies.set('jwtToken', response.data.jwtToken);
           localStorage.setItem('user', response.data.user);
           setUser(response.data.user);
           return <Redirect to="/" />;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => {
+          // display error message
+          setValues({ ...values, errorMessages: err.response.data.errors });
+        });
+    } else {
+      setValues({
+        ...values,
+        errorMessages: ['All fields needs to be filled'],
+      });
     }
   };
 
@@ -87,23 +85,19 @@ export default function SignupForm({ setUser }) {
       <form className={classes.root} onSubmit={handleSubmit}>
         <TextField
           label="Username"
-          id="outlined-start-adornment"
           className={clsx(classes.margin, classes.textField)}
           variant="outlined"
           required
-          shrink
           onChange={handleChange('username')}
         />
 
         <TextField
           label="Email"
-          id="outlined-start-adornment"
           className={clsx(classes.margin, classes.textField)}
           variant="outlined"
           type="email"
           required
           onChange={handleChange('email')}
-          shrink
         />
 
         <FormControl
@@ -118,6 +112,7 @@ export default function SignupForm({ setUser }) {
             type={values.showPassword ? 'text' : 'password'}
             value={values.password}
             onChange={handleChange('password')}
+            required
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -133,6 +128,12 @@ export default function SignupForm({ setUser }) {
             labelWidth={70}
           />
         </FormControl>
+
+        {values.errorMessages.map((error, index) => (
+          <Alert severity="error" key={index}>
+            {error}
+          </Alert>
+        ))}
 
         <Button
           variant="contained"

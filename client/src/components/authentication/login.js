@@ -1,6 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -14,28 +13,11 @@ import LoginWithGoogle from './googleLogin';
 import { Link } from 'react-router-dom';
 import axios from '../../api/index';
 import Cookies from 'js-cookie';
-import MuiAlert from '@material-ui/lab/Alert';
+import { Redirect } from 'react-router-dom';
+import useStyles from './style';
+import Alert from './alertMessage';
 
-function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
-const useStyles = makeStyles((theme) => ({
-  root: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  margin: {
-    margin: theme.spacing(1),
-  },
-
-  textField: {
-    width: '50%',
-  },
-}));
-
-export default function LoginForm() {
+export default function LoginForm(props) {
   const classes = useStyles();
   const [values, setValues] = React.useState({
     email: '',
@@ -44,7 +26,9 @@ export default function LoginForm() {
     errorMessages: [],
   });
 
+  // change a state when a textfield is changed
   const handleChange = (prop) => (event) => {
+    // remove errors message
     if (values.errorMessages) {
       setValues({ ...values, [prop]: event.target.value, errorMessages: [] });
     } else {
@@ -52,6 +36,7 @@ export default function LoginForm() {
     }
   };
 
+  // toggle showing character password field
   const handleClickShowPassword = () => {
     setValues({ ...values, showPassword: !values.showPassword });
   };
@@ -60,9 +45,11 @@ export default function LoginForm() {
     event.preventDefault();
   };
 
+  // submitting form
   const handleSubmit = (event) => {
     event.preventDefault();
 
+    // make sure  email and passord are filled
     if (values.email && values.password) {
       axios
         .post('/auth/login', {
@@ -70,13 +57,19 @@ export default function LoginForm() {
           password: values.password,
         })
         .then((response) => {
-          console.log(response);
           Cookies.set('jwtToken', response.data.jwtToken);
+          localStorage.setItem('user', response.data.user);
+          props.setUser(response.data.user);
+          return <Redirect to="/" />;
         })
         .catch((err) => {
-          console.log(err.response.data.errors);
           setValues({ ...values, errorMessages: err.response.data.errors });
         });
+    } else {
+      setValues({
+        ...values,
+        errorMessages: ['password and email cannot be empty'],
+      });
     }
   };
 
@@ -109,6 +102,7 @@ export default function LoginForm() {
             type={values.showPassword ? 'text' : 'password'}
             value={values.password}
             onChange={handleChange('password')}
+            required
             endAdornment={
               <InputAdornment position="end">
                 <IconButton
@@ -124,8 +118,10 @@ export default function LoginForm() {
             labelWidth={70}
           />
         </FormControl>
-        {values.errorMessages.map((error) => (
-          <Alert severity="error">{error}</Alert>
+        {values.errorMessages.map((error, index) => (
+          <Alert severity="error" key={index}>
+            {error}
+          </Alert>
         ))}
 
         <Button
