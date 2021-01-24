@@ -21,15 +21,18 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CategorySelection(props) {
+  const [categoryList, updateCategoryList] = React.useState([]);
   const classes = useStyles();
-  const [category, setCategory] = React.useState('All');
-  const [categoryList, setCategoryList] = React.useState([]);
+  const [category, setCategory] = React.useState('None');
   const [showForm, setShowForm] = React.useState(false);
+  const [newCategory, setNewCategory] = React.useState('');
+
+  console.log(categoryList);
 
   React.useEffect(() => {
     const fetchData = async () => {
       const response = await axios.get('/category/all');
-      setCategoryList(response.data);
+      updateCategoryList(response.data);
     };
     fetchData();
   }, []);
@@ -40,13 +43,18 @@ export default function CategorySelection(props) {
     setCategory(event.target.value);
   };
 
+  const handleNewCategoryChange = (event) => {
+    setNewCategory(event.target.value);
+  };
+
   const saveCategory = async () => {
     try {
       const response = await axios.post('/category/create', {
-        name: category,
+        name: newCategory,
       });
+      setNewCategory('');
       setShowForm(false);
-      setCategoryList([...categoryList, response.data]);
+      updateCategoryList('categoryList', [...categoryList, response.data]);
     } catch (error) {
       console.log(error);
       alert('something went wrong');
@@ -60,10 +68,9 @@ export default function CategorySelection(props) {
           className={classes.margin}
           id="filled-multiline-static"
           label="New Category"
-          value={category}
-          variant="filled"
-          fullWidth
-          onChange={handleCategoryChange}
+          value={newCategory}
+          // variant="filled"
+          onChange={handleNewCategoryChange}
         ></TextField>
         <Button onClick={saveCategory}> Save</Button>
         <Button onClick={() => setShowForm(false)}> Cancel</Button>
@@ -89,7 +96,7 @@ export default function CategorySelection(props) {
             value={category}
             onChange={handleChange}
           >
-            <MenuItem value={'All'}>All</MenuItem>
+            <MenuItem value={'None'}>None</MenuItem>
             {categoryList.map((category) => (
               <MenuItem value={category.name} key={category._id}>
                 {category.name}

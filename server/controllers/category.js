@@ -3,6 +3,16 @@ import Profile from '../models/profile.js';
 export async function createCategory(req, res) {
   const { name } = req.body;
   try {
+    const category = await Category.findOne({ name, userId: req.user._id });
+
+    // if the user already have a category with this name
+    if (category) {
+      return res
+        .status(422)
+        .json({ errors: ['A category with that name already exiist'] });
+    }
+
+    // create new category and add it to the category list of the user
     const newCategory = new Category({ name, userId: req.user.userId });
     const user = await Profile.findById(req.user.userId);
     const result = await newCategory.save();
@@ -10,7 +20,6 @@ export async function createCategory(req, res) {
     await user.save();
     return res.status(200).json(result);
   } catch (error) {
-    console.log('there');
     return res.status(500).json(error);
   }
 }

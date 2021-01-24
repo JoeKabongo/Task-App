@@ -21,23 +21,22 @@ import Button from '@material-ui/core/Button';
 export function TaskDetail(props) {
   const classes = useStyles();
 
-  const [age, setAge] = React.useState('');
+  const { categoryList } = props;
+
   const [task, setTask] = React.useState({
     name: '',
     isCompleted: false,
     dueDate: new Date(),
     description: ' ',
+    category: '',
   });
   const [show, setShow] = React.useState(false);
 
   React.useEffect(() => {
     if (props.task) setTask(props.task);
     setShow(props.show);
+    console.log(props.task);
   }, [props]);
-
-  const handleChange = (event) => {
-    setAge(event.target.value);
-  };
 
   const handleTaskChange = (name, value) => {
     console.log(name, value);
@@ -113,16 +112,19 @@ export function TaskDetail(props) {
               <Select
                 labelId="demo-simple-select-filled-label"
                 id="demo-simple-select-filled"
-                value={age}
-                onChange={handleChange}
+                defaultValue=""
+                value={task.category}
+                onChange={(e) => handleTaskChange('category', e.target.value)}
                 fullWidth
               >
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
-                <MenuItem value={10}>Ten</MenuItem>
-                <MenuItem value={20}>Twenty</MenuItem>
-                <MenuItem value={30}>Thirty</MenuItem>
+                {categoryList.map((category) => (
+                  <MenuItem value={category._id} key={category._id}>
+                    {category.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 

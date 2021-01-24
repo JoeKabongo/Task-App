@@ -16,6 +16,7 @@ export default function TaskList(props) {
     showTaskDetail: false,
     taskToDelete: null,
     category: 'All',
+    categoryList: [],
   });
 
   useEffect(() => {
@@ -94,7 +95,10 @@ export default function TaskList(props) {
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <h1> All Tasks</h1>
-            <CategorySelection />
+            <CategorySelection
+              categoryList={state.categoryList}
+              updateCategoryList={updateState}
+            />
           </div>
 
           <AddTaskForm setTasks={updateState} tasks={state.tasks} />
@@ -141,6 +145,7 @@ export default function TaskList(props) {
             closeDetail={() => toggleDetailWindow(state.taskToShowId)}
             setTasks={updateState}
             allTasks={state.tasks}
+            categoryList={state.categoryList}
           />
         </div>
       </section>

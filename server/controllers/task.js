@@ -44,19 +44,20 @@ export async function deleteTask(req, res) {
 // update a user task
 export async function updateTask(req, res) {
   const { id } = req.params;
-  const { name, isCompleted, description, dueDate } = req.body;
+  const { name, isCompleted, description, dueDate, category } = req.body;
 
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res.status(404).send(`No task with id: ${id}`);
   }
 
-  console.log(dueDate);
+  console.log(category);
   try {
     const newTask = await Task.findByIdAndUpdate(id, {
       name,
       isCompleted,
       description,
       dueDate,
+      category,
     });
     return res.json(newTask);
   } catch (error) {
