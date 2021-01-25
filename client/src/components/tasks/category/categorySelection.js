@@ -1,7 +1,6 @@
 import React from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import { makeStyles } from '@material-ui/core/styles';
@@ -21,32 +20,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function CategorySelection(props) {
-  const [categoryList, updateCategoryList] = React.useState([]);
   const classes = useStyles();
+  const [categories, setCategories] = React.useState([]);
   const [category, setCategory] = React.useState('None');
   const [showForm, setShowForm] = React.useState(false);
   const [newCategory, setNewCategory] = React.useState('');
 
-  console.log(categoryList);
-
   React.useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get('/category/all');
-      updateCategoryList(response.data);
-    };
-    fetchData();
-  }, []);
+    setCategories(props.categoryList);
+    setCategory(props.category);
+  }, [props]);
 
-  const handleChange = (event) => {};
-
-  const handleCategoryChange = (event) => {
-    setCategory(event.target.value);
+  // update the category selection
+  const handleChange = (event) => {
+    props.updateState('category', event.target.value);
   };
 
+  // new category form
   const handleNewCategoryChange = (event) => {
     setNewCategory(event.target.value);
   };
 
+  // save a category
   const saveCategory = async () => {
     try {
       const response = await axios.post('/category/create', {
@@ -54,13 +49,13 @@ export default function CategorySelection(props) {
       });
       setNewCategory('');
       setShowForm(false);
-      updateCategoryList('categoryList', [...categoryList, response.data]);
+      props.updateState('categoryList', [...props.categoryList, response.data]);
     } catch (error) {
       console.log(error);
-      alert('something went wrong');
     }
   };
 
+  // show the form if the user selected it
   if (showForm) {
     return (
       <div className={classes.margin} style={{ marginTop: '10px' }}>
@@ -97,8 +92,8 @@ export default function CategorySelection(props) {
             onChange={handleChange}
           >
             <MenuItem value={'None'}>None</MenuItem>
-            {categoryList.map((category) => (
-              <MenuItem value={category.name} key={category._id}>
+            {categories.map((category) => (
+              <MenuItem value={category} key={category._id}>
                 {category.name}
               </MenuItem>
             ))}

@@ -18,7 +18,7 @@ import {
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
-export function TaskDetail(props) {
+export default function TaskDetail(props) {
   const classes = useStyles();
 
   const { categoryList } = props;
@@ -35,15 +35,15 @@ export function TaskDetail(props) {
   React.useEffect(() => {
     if (props.task) setTask(props.task);
     setShow(props.show);
-    console.log(props.task);
   }, [props]);
 
+  // update task
   const handleTaskChange = (name, value) => {
-    console.log(name, value);
     const newTask = { ...task, [name]: value };
     setTask(newTask);
   };
 
+  // save a task
   const saveTask = async (e) => {
     e.preventDefault();
     await axios.put(`/tasks/update/${task._id}`, { ...task });

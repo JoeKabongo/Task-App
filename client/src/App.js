@@ -8,7 +8,7 @@ import {
 import Cookies from 'js-cookie';
 
 import Navbar from '../src/components/navBar/navbar';
-import TaskList from '../src/components/tasks/taskList';
+import TaskDisplay from '../src/components/tasks/taskDisplay';
 import ErrorPage from '../src/components/errorPage/errorPage';
 import SignupForm from '../src/components/authentication/signup';
 import LoginForm from '../src/components/authentication/login';
@@ -35,7 +35,6 @@ export default function App() {
       setUser(user);
       setIsLoggedIn(true);
     }
-    console.log(loggedInUser !== null);
   }, []);
 
   return (
@@ -44,7 +43,7 @@ export default function App() {
       <main style={{ marginLeft: '150px', marginRight: '150px' }}>
         <Switch>
           <Route exact path="/">
-            {isLoggedIn ? <TaskList /> : <Redirect to="/signup" />}
+            {isLoggedIn ? <TaskDisplay /> : <Redirect to="/signup" />}
           </Route>
           <Route exact path="/signup">
             {!isLoggedIn ? (

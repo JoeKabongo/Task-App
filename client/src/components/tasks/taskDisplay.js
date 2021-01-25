@@ -1,21 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from '../../api/index';
-import Task from './task/task';
 import AddTaskForm from './addTaskForm/addTask';
 import DeleteConfirmation from './deleteConfirmation/deleteConfirmation';
-import { TaskDetail } from './taskDetail/taskDetail';
+import TaskDetail from './taskDetail/taskDetail';
 import CategorySelection from './category/categorySelection';
+import TaskList from './taskList/taskList';
 
-export default function TaskList(props) {
+export default function TaskDisplay(props) {
   const [state, setState] = useState({
     tasks: [],
     isLoading: true,
     showDeleteConfirmation: false,
     showTaskDetail: false,
     taskToDelete: null,
-    category: 'All',
+    category: 'None',
     categoryList: [],
   });
 
@@ -23,13 +22,16 @@ export default function TaskList(props) {
     const fetchData = async () => {
       // fetch the users tasks
       try {
-        console.log('function called');
-        const request = await axios.get('/tasks');
-        setState({ ...state, tasks: request.data, isLoading: false });
-        console.log('here');
+        const requestTasks = await axios.get('/tasks');
+        const requestCategories = await axios.get('/category/all');
+        setState({
+          ...state,
+          tasks: requestTasks.data,
+          isLoading: false,
+          categoryList: requestCategories.data,
+        });
       } catch (error) {
         console.log(error.data);
-        console.log(error);
       }
     };
 
@@ -40,6 +42,7 @@ export default function TaskList(props) {
   const updateState = (name, value) => {
     setState({ ...state, [name]: value });
   };
+
   // change complete status of a task
   const handleChange = async (taskId) => {
     const newTasks = state.tasks.map((task) =>
@@ -94,49 +97,29 @@ export default function TaskList(props) {
       <section>
         <div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <h1> All Tasks</h1>
+            <h1>
+              {state.category === 'None' ? 'All' : `${state.category.name}`}{' '}
+              Tasks
+            </h1>
             <CategorySelection
               categoryList={state.categoryList}
-              updateCategoryList={updateState}
+              updateState={updateState}
+              category={state.category}
             />
           </div>
 
-          <AddTaskForm setTasks={updateState} tasks={state.tasks} />
           {state.isLoading && <CircularProgress />}
-
-          {state.tasks
-            .filter((task) => !task.isCompleted)
-            .map((task) => {
-              return (
-                <Task
-                  task={task}
-                  key={task._id}
-                  showDetail={() => toggleDetailWindow(task._id)}
-                  onChange={() => handleChange(task._id)}
-                  onDelete={() => handleDelete(task._id)}
-                />
-              );
-            })}
-          {state.tasks.filter((task) => task.isCompleted).length !== 0 ? (
-            <section>
-              <h3> Completed </h3>
-              {state.tasks
-                .filter((task) => task.isCompleted)
-                .map((task) => {
-                  return (
-                    <Task
-                      task={task}
-                      key={task._id}
-                      onChange={() => handleChange(task._id)}
-                      onDelete={() => handleDelete(task._id)}
-                      showDetail={() => toggleDetailWindow(task._id)}
-                    />
-                  );
-                })}
-            </section>
-          ) : (
-            <br />
+          {!state.isLoading && (
+            <AddTaskForm setTasks={updateState} tasks={state.tasks} />
           )}
+
+          <TaskList
+            tasks={state.tasks}
+            category={state.category}
+            onChange={handleChange}
+            handleDelete={handleDelete}
+            toggleDetailWindow={toggleDetailWindow}
+          />
         </div>
         <div>
           <TaskDetail

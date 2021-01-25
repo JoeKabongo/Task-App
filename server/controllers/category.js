@@ -7,6 +7,7 @@ export async function createCategory(req, res) {
 
     // if the user already have a category with this name
     if (category) {
+      console.log('Heere bay');
       return res
         .status(422)
         .json({ errors: ['A category with that name already exiist'] });

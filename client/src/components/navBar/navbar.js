@@ -10,7 +10,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import { Link } from 'react-router-dom';
-import Cookies from 'js-cookie';
 
 const useStyles = makeStyles((theme) => ({
   root: {

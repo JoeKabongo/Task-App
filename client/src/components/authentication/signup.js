@@ -12,7 +12,6 @@ import { Button } from '@material-ui/core';
 import LoginWithGoogle from './googleLogin';
 import { Link } from 'react-router-dom';
 import axios from '../../api/index';
-import Cookies from 'js-cookie';
 import { Redirect } from 'react-router-dom';
 import useStyles from './style';
 import Alert from '../alertMessage/alert';
