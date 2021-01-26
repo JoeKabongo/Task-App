@@ -9,20 +9,29 @@ export default function DeleteConfirmation(props) {
   return (
     <>
       <div className={show ? `${classes.cover}` : `${classes.hide}`}></div>
-      <div className={show ? `${classes.root}` : `${classes.hide}`}>
-        <p>
-          <b> {task && task.name}</b> will be deleted permanetly
-        </p>
-        <Button variant="contained" onClick={() => props.onCancelDeletion()}>
-          Cancel
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => props.onDelete()}
-        >
-          Delete
-        </Button>
+      <div className={show ? `${classes.container}` : `${classes.hide}`}>
+        <div className={show ? `${classes.root}` : `${classes.hide}`}>
+          <p>
+            <b> {task && task.name}</b> will be deleted permanetly
+          </p>
+          <div>
+            <Button
+              variant="contained"
+              onClick={() => props.onCancelDeletion()}
+              className={classes.margin}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => props.onDelete()}
+              className={classes.margin}
+            >
+              Delete
+            </Button>{' '}
+          </div>
+        </div>
       </div>
     </>
   );

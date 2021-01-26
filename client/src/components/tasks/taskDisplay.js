@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import axios from '../../api/index';
 import AddTaskForm from './addTaskForm/addTask';
@@ -6,8 +6,10 @@ import DeleteConfirmation from './deleteConfirmation/deleteConfirmation';
 import TaskDetail from './taskDetail/taskDetail';
 import CategorySelection from './category/categorySelection';
 import TaskList from './taskList/taskList';
+import { AlertMessageContext } from '../../app';
 
 export default function TaskDisplay(props) {
+  const showAlertMessage = useContext(AlertMessageContext);
   const [state, setState] = useState({
     tasks: [],
     isLoading: true,
@@ -31,7 +33,11 @@ export default function TaskDisplay(props) {
           categoryList: requestCategories.data,
         });
       } catch (error) {
-        console.log(error.data);
+        showAlertMessage({
+          display: true,
+          errors: error.data.errors,
+          type: 'error',
+        });
       }
     };
 
@@ -56,7 +62,11 @@ export default function TaskDisplay(props) {
 
       setState({ ...state, tasks: newTasks });
     } catch (error) {
-      console.log(error);
+      showAlertMessage({
+        display: true,
+        messages: error.data.errors,
+        type: 'error',
+      });
     }
   };
 
@@ -78,6 +88,11 @@ export default function TaskDisplay(props) {
         (task) => task._id !== state.taskToDelete
       );
       setState({ ...state, tasks: newTasks, showDeleteConfirmation: false });
+      showAlertMessage({
+        display: true,
+        messages: ['task have been deleted'],
+        type: 'success',
+      });
     } catch (error) {
       console.log(error);
     }

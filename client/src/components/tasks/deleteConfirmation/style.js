@@ -1,17 +1,24 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  container: {
     position: 'fixed',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    background: '#fff',
-    padding: '20px',
-    zIndex: '3',
+    top: '0',
+    left: '0',
+    height: '100%',
+    width: '100%',
     '& > *': {
       margin: theme.spacing(1),
     },
-    overflow: 'auto',
+    zIndex: '10',
+    display: 'flex',
+    justifyContent: 'center' /* aligns on vertical for column */,
+    alignItems: 'center' /* aligns on horizontal for column */,
+  },
+  root: {
+    backgroundColor: 'white',
+    padding: '30px',
+    width: 'auto',
   },
 
   cover: {
@@ -22,11 +29,13 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     backgroundColor: 'none',
     opacity: 0.3,
-    zIndex: '2',
     background: '#000',
   },
   hide: {
     display: 'none',
+  },
+  margin: {
+    margin: theme.spacing(1),
   },
 }));
 

@@ -18,23 +18,22 @@ import Alert from '../alertMessage/alert';
 
 export default function SignupForm(props) {
   const classes = useStyles();
-  const { saveUser } = props;
+  const { saveUser, setAlert, alertDisplayed } = props;
 
   const [values, setValues] = React.useState({
     username: '',
     email: '',
     password: '',
     showPassword: false,
-    errorMessages: [],
   });
 
   // change a state when a textfield is changed
   const handleChange = (prop) => (event) => {
-    // remove errors message
-    if (values.errorMessages) {
-      setValues({ ...values, [prop]: event.target.value, errorMessages: [] });
-    } else {
-      setValues({ ...values, [prop]: event.target.value });
+    setValues({ ...values, [prop]: event.target.value });
+
+    // remove error message after using restart retyping
+    if (alertDisplayed) {
+      setAlert({ display: false, messages: [] });
     }
   };
 
@@ -63,11 +62,20 @@ export default function SignupForm(props) {
           // save user information and go to the home page
           const { jwtToken, user } = response.data;
           saveUser(jwtToken, user);
+          setAlert({
+            display: true,
+            messages: [`You have successfully signup in asn${user.username}`],
+            type: 'success',
+          });
           return <Redirect to="/" />;
         })
         .catch((err) => {
           // display error message
-          setValues({ ...values, errorMessages: err.response.data.errors });
+          setAlert({
+            display: true,
+            messages: err.response.data.errors,
+            type: 'error',
+          });
         });
     } else {
       setValues({
@@ -128,12 +136,6 @@ export default function SignupForm(props) {
             labelWidth={70}
           />
         </FormControl>
-
-        {values.errorMessages.map((error, index) => (
-          <Alert severity="error" key={index}>
-            {error}
-          </Alert>
-        ))}
 
         <Button
           variant="contained"

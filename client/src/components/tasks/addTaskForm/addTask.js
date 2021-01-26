@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import axios from '../../../api/index';
+import { AlertMessageContext } from '../../../app';
+
 const useStyles = makeStyles((theme) => ({
   // root: {
   //   '& > *': {
@@ -12,6 +14,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function AddTaskForm({ tasks, setTasks }) {
+  const setAlertMessage = useContext(AlertMessageContext);
   const [textValue, setTextValue] = useState('');
   const classes = useStyles();
 
@@ -19,6 +22,7 @@ export default function AddTaskForm({ tasks, setTasks }) {
     e.preventDefault();
     // only update tasks if user entered some text
     if (textValue) {
+      console.log('here');
       const newTask = {
         name: textValue,
         isCompleted: false,
@@ -29,9 +33,18 @@ export default function AddTaskForm({ tasks, setTasks }) {
         .then((res) => {
           setTasks('tasks', [res.data, ...tasks]);
           setTextValue('');
+          setAlertMessage({
+            display: true,
+            type: 'success',
+            messages: [`${textValue} was  successfully added to your task`],
+          });
         })
-        .catch((error) => {
-          console.log(error);
+        .catch((_) => {
+          setAlertMessage({
+            display: true,
+            type: 'error',
+            messages: ['Could not add task, something went wrong!'],
+          });
         });
     }
   };

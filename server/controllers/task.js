@@ -20,13 +20,12 @@ export async function createTask(req, res) {
     const newTask = new Task({ name, userId: req.user.userId });
     try {
       await newTask.save();
-      console.log(newTask, newTask);
-      res.status(201).json(newTask);
+      return res.status(201).json(newTask);
     } catch (error) {
-      res.status(409).json({ error: error.message });
+      return res.status(409).json({ errors: [error.message] });
     }
   } else {
-    res.status(400).json({ error: 'invalid request' });
+    return res.status(400).json({ error: 'invalid request' });
   }
 }
 
@@ -37,7 +36,7 @@ export async function deleteTask(req, res) {
     await Task.findByIdAndDelete(id);
     res.status(200).json({ message: 'Task was deleted' });
   } catch (error) {
-    res.status(500).json({ error: 'Something went wrong' });
+    res.status(500).json({ errors: ['Something went wrong'] });
   }
 }
 
@@ -61,6 +60,6 @@ export async function updateTask(req, res) {
     });
     return res.json(newTask);
   } catch (error) {
-    return res.status(500).json({ error: 'Something went wrong' });
+    return res.status(500).json({ errors: [error.message] });
   }
 }

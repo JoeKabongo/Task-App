@@ -14,25 +14,23 @@ import { Link } from 'react-router-dom';
 import axios from '../../api/index';
 import { Redirect } from 'react-router-dom';
 import useStyles from './style';
-import Alert from '../alertMessage/alert';
 
 export default function LoginForm(props) {
   const classes = useStyles();
-  const { saveUser } = props;
+  const { saveUser, setAlert, alertDisplayed } = props;
   const [values, setValues] = React.useState({
     email: '',
     password: '',
     showPassword: false,
-    errorMessages: [],
   });
 
   // change a state when a textfield is changed
   const handleChange = (prop) => (event) => {
-    // remove errors message
-    if (values.errorMessages) {
-      setValues({ ...values, [prop]: event.target.value, errorMessages: [] });
-    } else {
-      setValues({ ...values, [prop]: event.target.value });
+    setValues({ ...values, [prop]: event.target.value });
+
+    // remove error message after using restart retyping
+    if (alertDisplayed) {
+      setAlert({ display: false, messages: [] });
     }
   };
 
@@ -59,15 +57,26 @@ export default function LoginForm(props) {
         .then((response) => {
           const { jwtToken, user } = response.data;
           saveUser(jwtToken, user);
+          setAlert({
+            display: true,
+            messages: [`You have successfully logged in asn${user.username}`],
+            type: 'success',
+          });
           return <Redirect to="/" />;
         })
         .catch((err) => {
-          setValues({ ...values, errorMessages: err.response.data.errors });
+          // display error message
+          setAlert({
+            display: true,
+            messages: err.response.data.errors,
+            type: 'error',
+          });
         });
     } else {
-      setValues({
-        ...values,
-        errorMessages: ['password and email cannot be empty'],
+      setAlert({
+        display: true,
+        messages: ['All fields must be filled'],
+        type: 'error',
       });
     }
   };
@@ -116,11 +125,6 @@ export default function LoginForm(props) {
             labelWidth={70}
           />
         </FormControl>
-        {values.errorMessages.map((error, index) => (
-          <Alert severity="error" key={index}>
-            {error}
-          </Alert>
-        ))}
 
         <Button
           variant="contained"

@@ -46,7 +46,10 @@ export default function TaskDetail(props) {
   // save a task
   const saveTask = async (e) => {
     e.preventDefault();
-    await axios.put(`/tasks/update/${task._id}`, { ...task });
+    await axios.put(`/tasks/update/${task._id}`, {
+      ...task,
+      category: task.category === '' ? null : task.category,
+    });
     const newTasks = props.allTasks.map((element) =>
       element._id === task._id ? task : element
     );

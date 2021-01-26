@@ -34,11 +34,20 @@ export default function TaskList(props) {
             />
           );
         })}
-      {state.tasks.filter((task) => task.isCompleted).length !== 0 ? (
+      {state.tasks.filter(
+        (task) =>
+          task.isCompleted &&
+          (state.category === 'None' || task.category === state.category._id)
+      ).length !== 0 ? (
         <section>
           <h3> Completed </h3>
           {state.tasks
-            .filter((task) => task.isCompleted)
+            .filter(
+              (task) =>
+                task.isCompleted &&
+                (state.category === 'None' ||
+                  task.category === state.category._id)
+            )
             .map((task) => {
               return (
                 <Task

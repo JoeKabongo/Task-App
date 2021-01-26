@@ -12,7 +12,6 @@ const useStyles = makeStyles((theme) => ({
     },
     zIndex: '10',
     display: 'flex',
-    // flexFlow: 'column nowrap',
     justifyContent: 'center' /* aligns on vertical for column */,
     alignItems: 'center' /* aligns on horizontal for column */,
   },
