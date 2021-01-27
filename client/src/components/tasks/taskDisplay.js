@@ -35,9 +35,10 @@ export default function TaskDisplay(props) {
       } catch (error) {
         showAlertMessage({
           display: true,
-          errors: error.data.errors,
+          messages: error.response.data.errors,
           type: 'error',
         });
+        setState({ ...state, isLoading: false });
       }
     };
 
@@ -64,7 +65,7 @@ export default function TaskDisplay(props) {
     } catch (error) {
       showAlertMessage({
         display: true,
-        messages: error.data.errors,
+        messages: error.response.data.errors,
         type: 'error',
       });
     }

@@ -5,51 +5,40 @@ import {
   Switch,
   Redirect,
 } from 'react-router-dom';
-import Cookies from 'js-cookie';
 
 import Navbar from '../src/components/navBar/navbar';
 import TaskDisplay from '../src/components/tasks/taskDisplay';
 import ErrorPage from '../src/components/errorPage/errorPage';
 import SignupForm from '../src/components/authentication/signup';
 import LoginForm from '../src/components/authentication/login';
+import Profile from '../src/components/profile/profile';
 import Alert from '../src/components/alertMessage/alert';
+import {
+  isLoggedIn,
+  removeUser,
+  saveUser,
+} from '../src/components/authentication/userStatus';
 
 export const AlertMessageContext = createContext();
 
-export default function App() {
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+export default function App(props) {
   const [alertState, setAlertState] = useState({
     messages: [],
     display: false,
     type: '',
   });
 
-  const logoutUser = () => {
-    Cookies.remove('jwtToken');
-    localStorage.removeItem('user');
-    setIsLoggedIn(false);
+  const [loginStatus, setLoginStatus] = useState(isLoggedIn);
+  const logout = () => {
+    removeUser();
+    setLoginStatus(false);
   };
-
-  const saveUser = (token, user) => {
-    Cookies.set('jwtToken', token);
-    localStorage.setItem('user', user);
-    setIsLoggedIn(true);
-  };
-
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem('user');
-    if (loggedInUser !== null) {
-      setUser(user);
-      setIsLoggedIn(true);
-    }
-  }, []);
 
   return (
     <>
       <AlertMessageContext.Provider value={setAlertState}>
         <Router>
-          <Navbar isLoggedIn={isLoggedIn} logout={logoutUser} />
+          <Navbar isLoggedIn={loginStatus} logout={logout} />
 
           <main style={{ marginLeft: '150px', marginRight: '150px' }}>
             {alertState.display && (
@@ -62,14 +51,20 @@ export default function App() {
 
             <Switch>
               <Route exact path="/">
-                {isLoggedIn ? <TaskDisplay /> : <Redirect to="/signup" />}
+                {loginStatus ? <TaskDisplay /> : <Redirect to="/signup" />}
               </Route>
+
+              <Route exact path="/me">
+                {loginStatus ? <Profile /> : <Redirect to="/signup" />}
+              </Route>
+
               <Route exact path="/signup">
-                {!isLoggedIn ? (
+                {!loginStatus ? (
                   <SignupForm
                     saveUser={saveUser}
                     setAlert={setAlertState}
                     alertDisplayed={alertState.display}
+                    setLoginStatus={setLoginStatus}
                   />
                 ) : (
                   <Redirect to="/" />
@@ -77,10 +72,11 @@ export default function App() {
               </Route>
 
               <Route exact path="/login">
-                {!isLoggedIn ? (
+                {!loginStatus ? (
                   <LoginForm
                     saveUser={saveUser}
                     setAlert={setAlertState}
+                    setLoginStatus={setLoginStatus}
                     alertDisplayed={alertState.display}
                   />
                 ) : (

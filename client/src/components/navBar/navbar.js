@@ -20,6 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    textDecoration: 'none',
   },
 }));
 
@@ -51,7 +52,13 @@ export default function ButtonAppBar(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" className={classes.title}>
+          <Typography
+            variant="h6"
+            className={classes.title}
+            component={Link}
+            to="/"
+            color="inherit"
+          >
             Task Tracker
           </Typography>
           {!isLoggedIn && (
@@ -91,7 +98,9 @@ export default function ButtonAppBar(props) {
                 open={open}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleClose} component={Link} to="/me">
+                  Profile
+                </MenuItem>
                 <MenuItem onClick={logout}>Logout</MenuItem>
               </Menu>
             </div>

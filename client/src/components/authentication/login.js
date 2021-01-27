@@ -17,7 +17,7 @@ import useStyles from './style';
 
 export default function LoginForm(props) {
   const classes = useStyles();
-  const { saveUser, setAlert, alertDisplayed } = props;
+  const { saveUser, setAlert, alertDisplayed, setLoginStatus } = props;
   const [values, setValues] = React.useState({
     email: '',
     password: '',
@@ -62,7 +62,8 @@ export default function LoginForm(props) {
             messages: [`You have successfully logged in asn${user.username}`],
             type: 'success',
           });
-          return <Redirect to="/" />;
+          setLoginStatus(true);
+          // return <Redirect to="/" />;
         })
         .catch((err) => {
           // display error message
