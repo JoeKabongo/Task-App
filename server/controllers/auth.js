@@ -114,6 +114,7 @@ export async function login(req, res) {
       },
     });
   } catch (error) {
+    console.log('here');
     return res.status(500).json({ errors: err });
   }
 }

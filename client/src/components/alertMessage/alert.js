@@ -1,7 +1,8 @@
 import React from 'react';
 import MuiAlert from '@material-ui/lab/Alert';
 
-export default function Alert({ alerts, setAlertState, type }) {
+export default function Alert(props) {
+  const { alerts, setAlertState, type } = props;
   React.useEffect(() => {
     const timer = setTimeout(() => {
       setAlertState({ display: false });

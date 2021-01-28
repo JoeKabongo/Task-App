@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ButtonAppBar(props) {
   const classes = useStyles();
 
-  const { isLoggedIn, logout } = props;
+  const { user, logout } = props;
 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -61,7 +61,7 @@ export default function ButtonAppBar(props) {
           >
             Task Tracker
           </Typography>
-          {!isLoggedIn && (
+          {!user && (
             <div>
               <Button color="inherit" component={Link} to="/login">
                 Login
@@ -72,7 +72,7 @@ export default function ButtonAppBar(props) {
             </div>
           )}
 
-          {isLoggedIn && (
+          {user && (
             <div>
               <IconButton
                 aria-label="account of current user"

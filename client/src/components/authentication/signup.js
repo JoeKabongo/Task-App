@@ -18,7 +18,7 @@ import Alert from '../alertMessage/alert';
 
 export default function SignupForm(props) {
   const classes = useStyles();
-  const { saveUser, setAlert, alertDisplayed } = props;
+  const { saveUser, setAlert, alertDisplayed, setLoginStatus } = props;
 
   const [values, setValues] = React.useState({
     username: '',
@@ -64,16 +64,18 @@ export default function SignupForm(props) {
           saveUser(jwtToken, user);
           setAlert({
             display: true,
-            messages: [`You have successfully signup in asn${user.username}`],
+            messages: [`You have successfully signup in as ${user.username}`],
             type: 'success',
           });
-          return <Redirect to="/" />;
+          setLoginStatus(true);
         })
         .catch((err) => {
           // display error message
           setAlert({
             display: true,
-            messages: err.response.data.errors,
+            messages: err.response
+              ? err.response.data.errors
+              : ['Something went wrong'],
             type: 'error',
           });
         });
