@@ -131,44 +131,54 @@ export async function getUserInfo(req, res) {
   try {
     const user = await Profile.findById(req.user.userId);
     const categories = user.categoryList;
-    console.log(categories.l);
+  } catch (error) {}
+}
+
+export async function updateUser(req, res) {
+  const { username, email } = req.body;
+  console.log('update');
+  try {
+    const user = await Profile.findByIdAndUpdate(req.user.userId, {
+      username,
+      email,
+    });
+    return res.status(200).json({ user });
   } catch (error) {}
 }
 export function googleLogin(req, res) {
-  //   const { tokenId, username } = req.body;
-  //   client
-  //     .verifyIdToken({
-  //       idToken: tokenId,
-  //       audience:
-  //         googleClient,
-  //     })
-  //     .then((response) => {
-  //       const { email_verified, name, email } = response.payload;
-  //       if (email_verified) {
-  //         Profile.findOne({ email }).exec((error, user) => {
-  //           if (error) {
-  //             return res.status(400).json({ error: error.message });
-  //           } else {
-  //             if (user) {
-  //               return res.status(200).json({ x: 'user already logged in' });
-  //             } else {
-  //               let password = email + name;
-  //               const newProfile = new Profile({ name, email, password });
-  //               newProfile.save((error, data) => {
-  //                 if (error) {
-  //                   return res.status(400).json({ error: error.message });
-  //                 }
-  //                 return res.status(200).json(data);
-  //               });
-  //             }
-  //           }
-  //         });
-  //       }
-  //       console.log(email_verified, name, email);
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
+  const { tokenId, username } = req.body;
+  client
+    .verifyIdToken({
+      idToken: tokenId,
+      audience: googleClient,
+    })
+    .then((response) => {
+      const { email_verified, name, email } = response.payload;
+      if (email_verified) {
+        Profile.findOne({ email }).exec((error, user) => {
+          if (error) {
+            return res.status(400).json({ error: error.message });
+          } else {
+            if (user) {
+              return res.status(200).json({ x: 'user already logged in' });
+            } else {
+              let password = email + name;
+              const newProfile = new Profile({ name, email, password });
+              newProfile.save((error, data) => {
+                if (error) {
+                  return res.status(400).json({ error: error.message });
+                }
+                return res.status(200).json(data);
+              });
+            }
+          }
+        });
+      }
+      console.log(email_verified, name, email);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }
 
 export async function deleteAllUser(req, res) {

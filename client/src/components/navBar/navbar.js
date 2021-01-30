@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -27,9 +27,13 @@ const useStyles = makeStyles((theme) => ({
 export default function ButtonAppBar(props) {
   const classes = useStyles();
 
-  const { user, logout } = props;
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [user, setUser] = useState(null);
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  useEffect(() => {
+    setUser(props.user);
+  }, [props]);
+
   const open = Boolean(anchorEl);
 
   const handleMenu = (event) => {
@@ -101,7 +105,7 @@ export default function ButtonAppBar(props) {
                 <MenuItem onClick={handleClose} component={Link} to="/me">
                   Profile
                 </MenuItem>
-                <MenuItem onClick={logout}>Logout</MenuItem>
+                <MenuItem onClick={() => props.logout()}>Logout</MenuItem>
               </Menu>
             </div>
           )}

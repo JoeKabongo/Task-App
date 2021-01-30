@@ -57,14 +57,8 @@ export default function LoginForm(props) {
         .then((response) => {
           const { jwtToken, user } = response.data;
           saveUser(jwtToken, user);
-          setAlert({
-            display: true,
-            messages: [`You have successfully logged in asn${user.username}`],
-            type: 'success',
-          });
         })
         .catch((err) => {
-          // display error message
           setAlert({
             display: true,
             messages: err.response

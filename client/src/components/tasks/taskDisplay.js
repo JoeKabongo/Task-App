@@ -41,9 +41,7 @@ export default function TaskDisplay(props) {
         setState({ ...state, isLoading: false });
       }
     };
-
     fetchData();
-    return () => console.log('clean up');
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateState = (name, value) => {

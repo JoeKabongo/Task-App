@@ -15,16 +15,17 @@ export default function LoginWithGoogle() {
 }
 
 const responseSuccess = (response) => {
+  console.log(response);
   console.log(response.tokenId);
-  axios
-    .post('/auth/googlelogin', {
-      tokenId: response.tokenId,
-      username: response.profileObj.name,
-    })
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => console.log(response));
+  // axios
+  //   .post('/auth/googlelogin', {
+  //     tokenId: response.tokenId,
+  //     username: response.profileObj.name,
+  //   })
+  //   .then((response) => {
+  //     console.log(response);
+  //   })
+  //   .catch((error) => console.log(response));
 };
 
 const responseFailure = (response) => {

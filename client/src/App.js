@@ -6,6 +6,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import Cookies from 'js-cookie';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Navbar from '../src/components/navBar/navbar';
 import TaskDisplay from '../src/components/tasks/taskDisplay';
@@ -17,65 +18,81 @@ import Alert from '../src/components/alertMessage/alert';
 
 export const AlertMessageContext = createContext();
 
-export default function App(props) {
-  const [alertState, setAlertState] = useState({
-    messages: [],
-    display: false,
-    type: '',
+export default function App() {
+  const [state, setState] = useState({
+    alert: {
+      messages: [],
+      display: false,
+      type: '',
+    },
+    user: null,
+    isLoading: true,
   });
 
-  const [user, setUser] = useState();
-
   useEffect(() => {
-    const loggedInUser = JSON.stringify(localStorage.getItem('user'));
+    const loggedInUser = localStorage.getItem('user');
     if (loggedInUser) {
       const foundUser = JSON.parse(loggedInUser);
-      setUser(foundUser);
+      setState({ ...state, user: foundUser, isLoading: false });
+    } else {
+      setState({ ...state, isLoading: false });
     }
   }, []);
 
-  const saveUser = (token, user) => {
+  const setAlertState = (options) => {
+    setState({ ...state, alert: options });
+  };
+
+  const saveUser = (token, newUser) => {
     Cookies.set('jwtToken', token);
-    localStorage.setItem('user', JSON.stringify(user));
-    setUser(user);
+    localStorage.setItem('user', JSON.stringify(newUser));
+    setState({ ...state, user: newUser, isLoading: false });
   };
 
   const logoutUser = () => {
     Cookies.remove('jwtToken');
     localStorage.removeItem('user');
-    setUser(null);
+    setState({ ...state, user: null });
   };
+
+  if (state.isLoading) {
+    return <CircularProgress />;
+  }
 
   return (
     <>
       <AlertMessageContext.Provider value={setAlertState}>
         <Router>
-          <Navbar user={user} logout={logoutUser} />
+          <Navbar user={state.user} logout={logoutUser} />
 
           <main style={{ marginLeft: '150px', marginRight: '150px' }}>
-            {alertState.display && (
+            {state.alert.display && (
               <Alert
-                alerts={alertState.messages}
-                type={alertState.type}
+                alerts={state.alert.messages}
+                type={state.alert.type}
                 setAlertState={setAlertState}
               />
             )}
 
             <Switch>
               <Route exact path="/">
-                {user ? <TaskDisplay /> : <Redirect to="/signup" />}
+                {state.user ? <TaskDisplay /> : <Redirect to="signup" />}
               </Route>
 
               <Route exact path="/me">
-                {user ? <Profile /> : <Redirect to="/signup" />}
+                {state.user ? (
+                  <Profile user={state.user} />
+                ) : (
+                  <Redirect to="signup" />
+                )}
               </Route>
 
               <Route exact path="/signup">
-                {!user ? (
+                {!state.user ? (
                   <SignupForm
                     saveUser={saveUser}
                     setAlert={setAlertState}
-                    alertDisplayed={alertState.display}
+                    alertDisplayed={state.alert.display}
                   />
                 ) : (
                   <Redirect to="/" />
@@ -83,19 +100,18 @@ export default function App(props) {
               </Route>
 
               <Route exact path="/login">
-                {!user ? (
+                {!state.user ? (
                   <LoginForm
                     saveUser={saveUser}
                     setAlert={setAlertState}
-                    alertDisplayed={alertState.display}
+                    alertDisplayed={state.alert.display}
                   />
                 ) : (
                   <Redirect to="/" />
                 )}
               </Route>
-
               <Route path="*">
-                <ErrorPage />
+                <Redirect to="/" />
               </Route>
             </Switch>
           </main>

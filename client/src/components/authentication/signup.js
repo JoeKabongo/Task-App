@@ -12,13 +12,11 @@ import { Button } from '@material-ui/core';
 import LoginWithGoogle from './googleLogin';
 import { Link } from 'react-router-dom';
 import axios from '../../api/index';
-import { Redirect } from 'react-router-dom';
 import useStyles from './style';
-import Alert from '../alertMessage/alert';
 
 export default function SignupForm(props) {
   const classes = useStyles();
-  const { saveUser, setAlert, alertDisplayed, setLoginStatus } = props;
+  const { saveUser, setAlert, alertDisplayed } = props;
 
   const [values, setValues] = React.useState({
     username: '',
@@ -67,7 +65,6 @@ export default function SignupForm(props) {
             messages: [`You have successfully signup in as ${user.username}`],
             type: 'success',
           });
-          setLoginStatus(true);
         })
         .catch((err) => {
           // display error message
