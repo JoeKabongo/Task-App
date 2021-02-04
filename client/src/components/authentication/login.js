@@ -131,8 +131,11 @@ export default function LoginForm(props) {
           Login
         </Button>
 
-        <p>
+        <p style={{ margin: '0px' }}>
           Dont have an account? <Link to="signup"> Signup Here</Link>
+        </p>
+        <p style={{ margin: '0px' }}>
+          <Link to="resetpassword"> Forgot password</Link>
         </p>
         <LoginWithGoogle />
       </form>

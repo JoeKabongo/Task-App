@@ -14,10 +14,14 @@ export async function getTasks(req, res) {
 
 // create a task for a user
 export async function createTask(req, res) {
-  const { name } = req.body;
+  const { name, category } = req.body;
 
   if (name) {
-    const newTask = new Task({ name, userId: req.user.userId });
+    const newTask = new Task({
+      name,
+      userId: req.user.userId,
+      category: category,
+    });
     try {
       await newTask.save();
       return res.status(201).json(newTask);

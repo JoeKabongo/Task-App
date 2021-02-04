@@ -57,14 +57,9 @@ export default function SignupForm(props) {
           confirmationPassword: values.password,
         })
         .then((response) => {
-          // save user information and go to the home page
+          // save user information
           const { jwtToken, user } = response.data;
           saveUser(jwtToken, user);
-          setAlert({
-            display: true,
-            messages: [`You have successfully signup in as ${user.username}`],
-            type: 'success',
-          });
         })
         .catch((err) => {
           // display error message

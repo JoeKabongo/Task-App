@@ -14,6 +14,7 @@ import ErrorPage from '../src/components/errorPage/errorPage';
 import SignupForm from '../src/components/authentication/signup';
 import LoginForm from '../src/components/authentication/login';
 import Profile from '../src/components/profile/profile';
+import ResetPasswordPage from './components/authentication/resetPassword/resetPassword';
 import Alert from '../src/components/alertMessage/alert';
 
 export const AlertMessageContext = createContext();
@@ -110,6 +111,11 @@ export default function App() {
                   <Redirect to="/" />
                 )}
               </Route>
+
+              <Route exact path="/resetpassword">
+                {!state.user ? <ResetPasswordPage /> : <Redirect to="/" />}
+              </Route>
+
               <Route path="*">
                 <Redirect to="/" />
               </Route>

@@ -24,7 +24,7 @@ export default function DeleteConfirmation(props) {
             </Button>
             <Button
               variant="contained"
-              color="secondary"
+              color="primary"
               onClick={() => props.onDelete()}
               className={classes.margin}
             >

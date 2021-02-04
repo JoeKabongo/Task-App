@@ -45,7 +45,7 @@ export default function ButtonAppBar(props) {
   };
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{ marginTop: '0px' }}>
       <AppBar position="static">
         <Toolbar>
           <IconButton

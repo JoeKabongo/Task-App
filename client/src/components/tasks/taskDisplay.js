@@ -124,7 +124,11 @@ export default function TaskDisplay(props) {
 
           {state.isLoading && <CircularProgress />}
           {!state.isLoading && (
-            <AddTaskForm setTasks={updateState} tasks={state.tasks} />
+            <AddTaskForm
+              setTasks={updateState}
+              tasks={state.tasks}
+              category={state.category}
+            />
           )}
 
           <TaskList

@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+
 import axios from '../../../api/index';
 import { AlertMessageContext } from '../../../app';
 
@@ -13,10 +14,24 @@ const useStyles = makeStyles((theme) => ({
   // },
 }));
 
-export default function AddTaskForm({ tasks, setTasks }) {
+export default function AddTaskForm({ tasks, setTasks, category }) {
   const setAlertMessage = useContext(AlertMessageContext);
   const [textValue, setTextValue] = useState('');
   const classes = useStyles();
+
+  const [task, setTask] = React.useState({
+    name: '',
+    isCompleted: false,
+    dueDate: new Date(),
+    description: ' ',
+    category: '',
+  });
+
+  // update task
+  const handleTaskChange = (name, value) => {
+    const newTask = { ...task, [name]: value };
+    setTask(newTask);
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -26,6 +41,7 @@ export default function AddTaskForm({ tasks, setTasks }) {
       const newTask = {
         name: textValue,
         isCompleted: false,
+        category: category === 'None' ? null : category._id,
       };
 
       axios
@@ -58,7 +74,7 @@ export default function AddTaskForm({ tasks, setTasks }) {
     >
       <TextField
         id="standard-basic"
-        label="Add Task"
+        label="Task name"
         color="primary"
         value={textValue}
         onChange={(e) => setTextValue(e.target.value)}

@@ -22,6 +22,7 @@ export default function Task(props) {
             checked={isCompleted}
             onChange={() => props.onChange()}
             name="checkedA"
+            color="primary"
           />
         }
       />

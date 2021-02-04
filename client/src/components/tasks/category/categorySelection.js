@@ -3,6 +3,9 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
+
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -91,7 +94,7 @@ export default function CategorySelection(props) {
             value={category}
             onChange={handleChange}
           >
-            <MenuItem value={'None'}>None</MenuItem>
+            <MenuItem value={'None'}>All</MenuItem>
             {categories.map((category) => (
               <MenuItem value={category} key={category._id}>
                 {category.name}
@@ -102,6 +105,9 @@ export default function CategorySelection(props) {
         <Button onClick={() => setShowForm(true)}>
           <AddIcon />
         </Button>
+        <IconButton aria-label="delete" onClick={() => props.onDelete()}>
+          <DeleteOutlineOutlinedIcon fontSize="inherit" />
+        </IconButton>
       </div>
     </section>
   );
