@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
+import DeleteCategoryForm from './deleteCategory';
 
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -24,12 +25,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function CategorySelection(props) {
   const classes = useStyles();
-  const [categories, setCategories] = React.useState([]);
-  const [category, setCategory] = React.useState('None');
-  const [showForm, setShowForm] = React.useState(false);
-  const [newCategory, setNewCategory] = React.useState('');
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState('None');
+  const [showForm, setShowForm] = useState(false);
+  const [showDeleteForm, setShowDeleteForm] = useState(false);
+  const [newCategory, setNewCategory] = useState('');
 
-  React.useEffect(() => {
+  useEffect(() => {
     setCategories(props.categoryList);
     setCategory(props.category);
   }, [props]);
@@ -78,6 +80,7 @@ export default function CategorySelection(props) {
 
   return (
     <section>
+      {/* <DeleteCategoryForm categories={categories} show={true} /> */}
       <div
         style={{
           display: 'flex',
