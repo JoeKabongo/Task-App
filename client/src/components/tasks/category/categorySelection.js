@@ -80,7 +80,11 @@ export default function CategorySelection(props) {
 
   return (
     <section>
-      {/* <DeleteCategoryForm categories={categories} show={true} /> */}
+      <DeleteCategoryForm
+        categories={categories}
+        show={showDeleteForm}
+        hideDeleteCategory={() => setShowDeleteForm(false)}
+      />
       <div
         style={{
           display: 'flex',
@@ -108,7 +112,7 @@ export default function CategorySelection(props) {
         <Button onClick={() => setShowForm(true)}>
           <AddIcon />
         </Button>
-        <IconButton aria-label="delete" onClick={() => props.onDelete()}>
+        <IconButton aria-label="delete" onClick={() => setShowDeleteForm(true)}>
           <DeleteOutlineOutlinedIcon fontSize="inherit" />
         </IconButton>
       </div>

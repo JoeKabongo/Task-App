@@ -1,7 +1,7 @@
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles((theme) => ({
-  container: {
+  root: {
     position: 'fixed',
     top: '0',
     left: '0',
@@ -15,10 +15,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center' /* aligns on vertical for column */,
     alignItems: 'center' /* aligns on horizontal for column */,
   },
-  root: {
+
+  container: {
     backgroundColor: 'white',
     padding: '30px',
-    width: 'auto',
+    width: '500px',
   },
 
   cover: {
@@ -34,8 +35,15 @@ const useStyles = makeStyles((theme) => ({
   hide: {
     display: 'none',
   },
+
   margin: {
     margin: theme.spacing(1),
+  },
+  withoutLabel: {
+    marginTop: theme.spacing(3),
+  },
+  textField: {
+    width: '25ch',
   },
 }));
 

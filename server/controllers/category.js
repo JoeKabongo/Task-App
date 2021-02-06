@@ -34,3 +34,5 @@ export async function getCategories(req, res) {
     return res.status(500).json({ errors: error });
   }
 }
+
+export async function deleteCategories(req, res) {}
