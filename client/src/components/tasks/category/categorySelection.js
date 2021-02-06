@@ -84,6 +84,7 @@ export default function CategorySelection(props) {
         categories={categories}
         show={showDeleteForm}
         hideDeleteCategory={() => setShowDeleteForm(false)}
+        updateState={props.updateState}
       />
       <div
         style={{

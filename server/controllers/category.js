@@ -1,5 +1,7 @@
 import Category from '../models/category.js';
 import Profile from '../models/profile.js';
+import Task from '../models/task.js';
+
 export async function createCategory(req, res) {
   const { name } = req.body;
   try {
@@ -35,4 +37,14 @@ export async function getCategories(req, res) {
   }
 }
 
-export async function deleteCategories(req, res) {}
+export async function deleteCategory(req, res) {
+  const { id } = req.params;
+  try {
+    // delete the catetory and the tasks associated with it
+    await Category.findByIdAndDelete(id);
+    await Task.deleteMany({ category: id });
+    res.status(200).json({ message: 'Category was deleted' });
+  } catch (error) {
+    res.status(500).json({ errors: ['Something went wrong'] });
+  }
+}

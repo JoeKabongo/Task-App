@@ -4,6 +4,8 @@ import axios from '../../../api/index';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
+import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 
 export default function DeleteCategoryForm(props) {
   const classes = useStyles();
@@ -11,28 +13,21 @@ export default function DeleteCategoryForm(props) {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    let cats = props.categories.map((cat) => {
-      return { ...cat, checked: false };
-    });
-    setCatStatus(cats);
+    setCatStatus(props.categories);
     setShow(props.show);
   }, [props]);
 
-  // handle checked stat of checkbox on change
-  const handleChange = (id) => {
-    const newCats = catStatus.map((cat) =>
-      id === cat._id ? { ...cat, checked: !cat.checked } : cat
-    );
-    setCatStatus(newCats);
-  };
+  // delete  category
+  const deleteCategory = async (id) => {
+    try {
+      await axios.delete(`category/delete/${id}`);
 
-  // delete selected category
-  const deleteCategories = async () => {
-    const catsToDelete = catStatus
-      .filter((cat) => cat.checked === true)
-      .map((cat) => cat._id);
-
-    if (catsToDelete) {
+      props.updateState(
+        'categoryList',
+        props.categories.filter((cat) => cat._id !== id)
+      );
+    } catch (e) {
+      alert('Could not delete, something went wrong');
     }
   };
 
@@ -45,34 +40,35 @@ export default function DeleteCategoryForm(props) {
           <p> * This will also delete tasks under that category</p>
           {catStatus.map((category) => {
             return (
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={category.checked}
-                    name={category.name}
-                    color="primary"
-                    onChange={() => handleChange(category._id)}
-                  />
-                }
-                key={category._id}
-                label={category.name}
-                className={classes.margin}
-              />
+              // <FormControlLabel
+              //   control={
+              //     <Checkbox
+              //       checked={category.checked}
+              //       name={category.name}
+              //       color="primary"
+              //       onChange={() => handleChange(category._id)}
+              //     />
+              //   }
+              //   key={category._id}
+              //   label={category.name}
+              //   className={classes.margin}
+              // />
+              <div>
+                {category.name}
+                <IconButton
+                  aria-label="delete"
+                  onClick={() => deleteCategory(category._id)}
+                >
+                  <DeleteOutlineOutlinedIcon fontSize="inherit" />
+                </IconButton>
+              </div>
             );
           })}
           <div>
             <Button
               variant="contained"
               color="primary"
-              className={classes.margin}
-              onClick={deleteCategories}
-            >
-              Delete
-            </Button>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.margin}
+              // className={classes.margin}
               onClick={() => props.hideDeleteCategory()}
             >
               Close
