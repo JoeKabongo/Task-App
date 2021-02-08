@@ -30,7 +30,7 @@ export default function Task(props) {
         <p
           style={{
             margin: '0px',
-            fontSize: 'x-large',
+            fontSize: 'large',
             textDecoration: isCompleted ? 'line-through' : 'none',
             textAlign: 'center',
           }}
@@ -45,6 +45,7 @@ export default function Task(props) {
               justifyContent: 'center',
               justifyItems: 'center',
               color: 'gray',
+              fontSize: 'small',
             }}
           >
             <CalendarTodayOutlinedIcon fontSize="small" />

@@ -40,19 +40,6 @@ export default function DeleteCategoryForm(props) {
           <p> * This will also delete tasks under that category</p>
           {catStatus.map((category) => {
             return (
-              // <FormControlLabel
-              //   control={
-              //     <Checkbox
-              //       checked={category.checked}
-              //       name={category.name}
-              //       color="primary"
-              //       onChange={() => handleChange(category._id)}
-              //     />
-              //   }
-              //   key={category._id}
-              //   label={category.name}
-              //   className={classes.margin}
-              // />
               <div>
                 {category.name}
                 <IconButton

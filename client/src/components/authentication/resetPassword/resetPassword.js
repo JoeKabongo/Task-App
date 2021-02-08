@@ -23,6 +23,7 @@ export default function ResetPassword(props) {
     password: '',
     showPassword: false,
   });
+
   const classes = useStyles();
   console.log(classes);
   // change a state when a textfield is changed
@@ -64,6 +65,7 @@ export default function ResetPassword(props) {
             type="email"
             required
             FormHelperText="whatever agaahaha"
+            disabled={true}
           />
 
           <Button color="primary" variant="contained">
