@@ -1,6 +1,9 @@
 import GoogleAuth from 'google-auth-library';
 import bcrypt from 'bcrypt';
 import Profile from '../models/profile.js';
+import crypto from 'crypto';
+
+import ResetPassword from '../models/resetPassword.js';
 import jwt from 'jsonwebtoken';
 var googleClient = new GoogleAuth.OAuth2Client(process.env.GOOGLE_CLIENT);
 
@@ -145,6 +148,7 @@ export async function updateUser(req, res) {
     return res.status(200).json({ user });
   } catch (error) {}
 }
+
 export function googleLogin(req, res) {
   const { tokenId, username } = req.body;
   client
@@ -181,7 +185,33 @@ export function googleLogin(req, res) {
     });
 }
 
-export async function deleteAllUser(req, res) {
-  const all = await Profile.deleteMany({});
-  res.send(all);
+// create token code for user to verify email
+export async function resetPassword(req, res) {
+  const { email } = req.body;
+  try {
+    // look for user with this email
+    const user = await Profile.findOne({ email });
+    if (!user) return res.status(404).json({ errors: ['Email was not found'] });
+
+    //create random token and save it into reset password
+    const token = crypto.randomBytes(10).toString('hex');
+    var reset = await ResetPassword.findOne({ userId: user._id });
+    if (!reset) {
+      reset = new ResetPassword({});
+    }
+    reset.userId = user._id;
+    reset.token = token;
+    reset.expire = expireTime();
+    await reset.save();
+    res.status(200).json({ success: 'Token was created' });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ errors: error });
+  }
+}
+
+function expireTime() {
+  const today = new Date();
+  today.setHours(today.getHours() + 1);
+  return today;
 }

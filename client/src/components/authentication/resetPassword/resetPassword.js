@@ -10,10 +10,10 @@ import FormControl from '@material-ui/core/FormControl';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import axios from '../../../api/index';
-import useStyles from '../style';
 import FilledInput from '@material-ui/core/FilledInput';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
+import useStyles from './style';
 
 export default function ResetPassword(props) {
   const [name, setName] = React.useState('Composed TextField');
@@ -22,13 +22,38 @@ export default function ResetPassword(props) {
     email: '',
     password: '',
     showPassword: false,
+    stage: 0,
   });
 
   const classes = useStyles();
-  console.log(classes);
+
   // change a state when a textfield is changed
-  const handleChange = (prop) => (event) => {
-    setValues({ ...values, [prop]: event.target.value });
+  const handleChange = (name) => (event) => {
+    setValues({
+      ...values,
+      [name]: event.target.value,
+    });
+  };
+
+  const submitEmail = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post('/auth/resetPassword', {
+        email: values.email,
+      });
+      console.log(response);
+      setValues({ ...values, stage: 1 });
+    } catch (error) {
+      console.log(error.response.data);
+      console.log('Something went wrong');
+    }
+  };
+
+  const submitCode = (e) => {
+    e.preventDefault();
+
+    setValues({ ...values, stage: 2 });
   };
 
   // toggle showing character password field
@@ -42,71 +67,99 @@ export default function ResetPassword(props) {
   return (
     <section>
       <h1> Reset Password</h1>
-      <form>
-        <div className={classes.formContainer}>
+
+      <div>
+        <form onSubmit={submitEmail}>
           <TextField
             label="Email"
-            className={clsx(classes.margin, classes.textField)}
             variant="outlined"
             type="email"
+            name="email"
             required
-            //   onChange={handleChange('email')}
+            className={clsx(classes.margin, classes.textField)}
+            value={values.email}
+            onChange={handleChange('email')}
+            disabled={values.stage !== 0}
           />
-          <Button color="primary" variant="contained">
+          <Button
+            color="primary"
+            variant="contained"
+            className={
+              values.stage === 0 ? `${classes.margin}` : `${classes.hide}`
+            }
+            type="submit"
+          >
             Next
           </Button>
-        </div>
+        </form>
+      </div>
 
-        <div className={classes.hide}>
+      <div
+        className={values.stage >= 1 ? `${classes.margin}` : `${classes.hide}`}
+      >
+        <form onSubmit={submitCode}>
           <TextField
             label="Enter code you just received with the email provided"
             className={clsx(classes.margin, classes.textField)}
             variant="outlined"
-            type="email"
+            type="text"
             required
             FormHelperText="whatever agaahaha"
-            disabled={true}
+            disabled={values.stage !== 1}
           />
 
-          <Button color="primary" variant="contained">
+          <Button
+            color="primary"
+            variant="contained"
+            className={
+              values.stage === 1 ? `${classes.margin}` : `${classes.hide}`
+            }
+            type="submit"
+          >
             Next
           </Button>
-        </div>
+        </form>
+      </div>
 
-        <div className={classes.hide}>
-          <FormControl
-            className={clsx(classes.margin, classes.textField)}
-            variant="outlined"
-          >
-            <InputLabel htmlFor="outlined-adornment-password" required>
-              New Password
-            </InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-password"
-              type={values.showPassword ? 'text' : 'password'}
-              value={values.password}
-              onChange={handleChange('password')}
-              required
-              endAdornment={
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
-                    edge="end"
-                  >
-                    {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                  </IconButton>
-                </InputAdornment>
-              }
-              labelWidth={120}
-            />
-          </FormControl>
-          <Button color="primary" variant="contained">
-            Login
-          </Button>
-        </div>
-      </form>
+      <div
+        className={values.stage === 2 ? `${classes.margin}` : `${classes.hide}`}
+      >
+        <FormControl
+          className={clsx(classes.margin, classes.textField)}
+          variant="outlined"
+        >
+          <InputLabel htmlFor="outlined-adornment-password" required>
+            New Password
+          </InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-password"
+            type={values.showPassword ? 'text' : 'password'}
+            value={values.password}
+            onChange={handleChange('password')}
+            required
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {values.showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            }
+            labelWidth={120}
+          />
+        </FormControl>
+        <Button
+          color="primary"
+          variant="contained"
+          style={{ display: 'block' }}
+        >
+          Login
+        </Button>
+      </div>
     </section>
   );
 }
