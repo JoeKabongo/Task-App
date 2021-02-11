@@ -6,7 +6,7 @@ import {
   signup,
   getUserInfo,
   updateUser,
-  resetPassword,
+  generatePassCode,
 } from '../controllers/auth.js';
 import requireAuth from '../middleware/authMiddleware.js';
 
@@ -18,5 +18,5 @@ router.post('/googlelogin', googleLogin);
 router.get('/user', requireAuth, getUser);
 router.put('/update', requireAuth, updateUser);
 router.get('/user/allinfo', requireAuth, getUserInfo);
-router.post('/resetPassword', resetPassword);
+router.post('/resetPassword', generatePassCode);
 export default router;

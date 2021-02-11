@@ -45,7 +45,6 @@ export default function ResetPassword(props) {
       console.log(response);
       setValues({ ...values, stage: 1 });
     } catch (error) {
-      console.log(error.response.data);
       console.log('Something went wrong');
     }
   };

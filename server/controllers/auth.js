@@ -2,6 +2,7 @@ import GoogleAuth from 'google-auth-library';
 import bcrypt from 'bcrypt';
 import Profile from '../models/profile.js';
 import crypto from 'crypto';
+import nodemailer from 'nodemailer';
 
 import ResetPassword from '../models/resetPassword.js';
 import jwt from 'jsonwebtoken';
@@ -186,7 +187,7 @@ export function googleLogin(req, res) {
 }
 
 // create token code for user to verify email
-export async function resetPassword(req, res) {
+export async function generatePassCode(req, res) {
   const { email } = req.body;
   try {
     // look for user with this email
@@ -194,7 +195,7 @@ export async function resetPassword(req, res) {
     if (!user) return res.status(404).json({ errors: ['Email was not found'] });
 
     //create random token and save it into reset password
-    const token = crypto.randomBytes(10).toString('hex');
+    const token = crypto.randomBytes(8).toString('hex');
     var reset = await ResetPassword.findOne({ userId: user._id });
     if (!reset) {
       reset = new ResetPassword({});
@@ -203,9 +204,26 @@ export async function resetPassword(req, res) {
     reset.token = token;
     reset.expire = expireTime();
     await reset.save();
-    res.status(200).json({ success: 'Token was created' });
+
+    // Send email to user with the code generated
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.USER_EMAIL,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    var mailOptions = {
+      from: process.env.USER_EMAIL,
+      to: user.email,
+      subject: 'Reset Password Code',
+      text: `Hi from Task Tracker! The code is ${token} Use this code for next step to reset your password. It will expire in a hour`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    return res.status(200).json({ success: 'Token was created' });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ errors: error });
   }
 }
@@ -215,3 +233,14 @@ function expireTime() {
   today.setHours(today.getHours() + 1);
   return today;
 }
+
+// verify that user code is corect
+export async function verifyResetCode(req, res) {
+  const { email, code } = req.body;
+  try {
+    const resetToken = await ResetPassword.findOne({ email });
+  } catch (error) {}
+}
+
+// update password
+export async function updatePassword(req, res) {}
