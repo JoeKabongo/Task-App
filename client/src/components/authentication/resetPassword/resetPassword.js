@@ -10,59 +10,85 @@ import FormControl from '@material-ui/core/FormControl';
 import Visibility from '@material-ui/icons/Visibility';
 import VisibilityOff from '@material-ui/icons/VisibilityOff';
 import axios from '../../../api/index';
-import FilledInput from '@material-ui/core/FilledInput';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
 import useStyles from './style';
+import { Redirect } from 'react-router-dom';
 
-export default function ResetPassword(props) {
-  const [name, setName] = React.useState('Composed TextField');
+export default function ResetPassword() {
+  const classes = useStyles();
 
-  const [values, setValues] = React.useState({
+  const [state, setState] = React.useState({
     email: '',
+    resetCode: '',
     password: '',
     showPassword: false,
-    stage: 0,
+    stage: 0, // 0: Enter email, 1: verify password, 2: enter new password
+    redirect: false,
   });
-
-  const classes = useStyles();
 
   // change a state when a textfield is changed
   const handleChange = (name) => (event) => {
-    setValues({
-      ...values,
+    setState({
+      ...state,
       [name]: event.target.value,
     });
   };
 
+  // user submit their email
   const submitEmail = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('/auth/resetPassword', {
-        email: values.email,
+      await axios.post('/auth/resetcode/create', {
+        email: state.email,
       });
-      console.log(response);
-      setValues({ ...values, stage: 1 });
+      setState({ ...state, stage: 1 });
     } catch (error) {
       console.log('Something went wrong');
     }
   };
 
-  const submitCode = (e) => {
+  // user submit  passcode
+  const submitPassCode = async (e) => {
     e.preventDefault();
 
-    setValues({ ...values, stage: 2 });
+    try {
+      await axios.post('/auth/resetcode/verify', {
+        email: state.email,
+        code: state.resetCode,
+      });
+      setState({ ...state, stage: 2 });
+    } catch (error) {
+      console.log(error.response);
+    }
+  };
+
+  // user update their password
+  const submitNewPassword = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put('/auth/resetpassword', {
+        email: state.email,
+        password: state.password,
+      });
+      setState({ ...state, redirect: true });
+    } catch (error) {
+      console.log(error.response);
+    }
   };
 
   // toggle showing character password field
   const handleClickShowPassword = () => {
-    setValues({ ...values, showPassword: !values.showPassword });
+    setState({ ...state, showPassword: !state.showPassword });
   };
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
+
+  // user have reset their password
+  if (state.redirect) {
+    return <Redirect to="login" />;
+  }
   return (
     <section>
       <h1> Reset Password</h1>
@@ -76,15 +102,15 @@ export default function ResetPassword(props) {
             name="email"
             required
             className={clsx(classes.margin, classes.textField)}
-            value={values.email}
+            value={state.email}
             onChange={handleChange('email')}
-            disabled={values.stage !== 0}
+            disabled={state.stage !== 0}
           />
           <Button
             color="primary"
             variant="contained"
             className={
-              values.stage === 0 ? `${classes.margin}` : `${classes.hide}`
+              state.stage === 0 ? `${classes.margin}` : `${classes.hide}`
             }
             type="submit"
           >
@@ -94,9 +120,9 @@ export default function ResetPassword(props) {
       </div>
 
       <div
-        className={values.stage >= 1 ? `${classes.margin}` : `${classes.hide}`}
+        className={state.stage >= 1 ? `${classes.margin}` : `${classes.hide}`}
       >
-        <form onSubmit={submitCode}>
+        <form onSubmit={submitPassCode}>
           <TextField
             label="Enter code you just received with the email provided"
             className={clsx(classes.margin, classes.textField)}
@@ -104,14 +130,16 @@ export default function ResetPassword(props) {
             type="text"
             required
             FormHelperText="whatever agaahaha"
-            disabled={values.stage !== 1}
+            disabled={state.stage !== 1}
+            value={state.resetcode}
+            onChange={handleChange('resetCode')}
           />
 
           <Button
             color="primary"
             variant="contained"
             className={
-              values.stage === 1 ? `${classes.margin}` : `${classes.hide}`
+              state.stage === 1 ? `${classes.margin}` : `${classes.hide}`
             }
             type="submit"
           >
@@ -121,43 +149,46 @@ export default function ResetPassword(props) {
       </div>
 
       <div
-        className={values.stage === 2 ? `${classes.margin}` : `${classes.hide}`}
+        className={state.stage === 2 ? `${classes.margin}` : `${classes.hide}`}
       >
-        <FormControl
-          className={clsx(classes.margin, classes.textField)}
-          variant="outlined"
-        >
-          <InputLabel htmlFor="outlined-adornment-password" required>
-            New Password
-          </InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={values.showPassword ? 'text' : 'password'}
-            value={values.password}
-            onChange={handleChange('password')}
-            required
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {values.showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
-            labelWidth={120}
-          />
-        </FormControl>
-        <Button
-          color="primary"
-          variant="contained"
-          style={{ display: 'block' }}
-        >
-          Login
-        </Button>
+        <form onSubmit={submitNewPassword}>
+          <FormControl
+            className={clsx(classes.margin, classes.textField)}
+            variant="outlined"
+          >
+            <InputLabel htmlFor="outlined-adornment-password" required>
+              New Password
+            </InputLabel>
+            <OutlinedInput
+              id="outlined-adornment-password"
+              type={state.showPassword ? 'text' : 'password'}
+              value={state.password}
+              onChange={handleChange('password')}
+              required
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    edge="end"
+                  >
+                    {state.showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              }
+              labelWidth={120}
+            />
+          </FormControl>
+          <Button
+            color="primary"
+            variant="contained"
+            style={{ display: 'block' }}
+            type="submit"
+          >
+            Login
+          </Button>
+        </form>
       </div>
     </section>
   );

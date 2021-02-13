@@ -4,9 +4,10 @@ import {
   googleLogin,
   login,
   signup,
-  getUserInfo,
   updateUser,
   generatePassCode,
+  verifyResetCode,
+  updatePassword,
 } from '../controllers/auth.js';
 import requireAuth from '../middleware/authMiddleware.js';
 
@@ -17,6 +18,8 @@ router.post('/login', login);
 router.post('/googlelogin', googleLogin);
 router.get('/user', requireAuth, getUser);
 router.put('/update', requireAuth, updateUser);
-router.get('/user/allinfo', requireAuth, getUserInfo);
-router.post('/resetPassword', generatePassCode);
+router.post('/resetcode/create', generatePassCode);
+router.post('/resetcode/verify', verifyResetCode);
+router.put('/resetpassword', updatePassword);
+
 export default router;

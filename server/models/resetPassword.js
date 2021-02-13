@@ -10,7 +10,11 @@ const resetPasswordSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  expire: {
+  used: {
+    type: Boolean,
+    default: false,
+  },
+  expire_in: {
     type: Date,
     required: true,
   },

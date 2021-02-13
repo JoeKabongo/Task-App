@@ -1,11 +1,11 @@
 import GoogleAuth from 'google-auth-library';
 import bcrypt from 'bcrypt';
-import Profile from '../models/profile.js';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
-
-import ResetPassword from '../models/resetPassword.js';
 import jwt from 'jsonwebtoken';
+
+import Profile from '../models/profile.js';
+import ResetPassword from '../models/resetPassword.js';
 var googleClient = new GoogleAuth.OAuth2Client(process.env.GOOGLE_CLIENT);
 
 const tokenDuration = 15 * 24 * 60 * 60; // 15 days
@@ -43,10 +43,9 @@ export async function signup(req, res) {
     } else {
       const newProfile = new Profile({ username, email, password });
 
-      const salt = await bcrypt.genSalt(10);
-
+      // hashpassword
+      const salt = await bcrypt.genSalt(process.HASH_DIGIT);
       if (!salt) {
-        console.log('Here baby');
         return res
           .status(500)
           .json({ errors: 'Something went wrong with Bcrypt' });
@@ -118,36 +117,32 @@ export async function login(req, res) {
       },
     });
   } catch (error) {
-    console.log('here');
-    return res.status(500).json({ errors: err });
+    return res.status(500).json({ errors: error });
   }
 }
 
 export async function getUser(req, res) {
-  console.log(req.user);
   try {
     const user = await Profile.findById(req.user.userId);
-    return res.json(user);
-  } catch (error) {}
-}
+    if (!user) res.status(400).json({ errors: ['User was not found'] });
 
-export async function getUserInfo(req, res) {
-  try {
-    const user = await Profile.findById(req.user.userId);
-    const categories = user.categoryList;
-  } catch (error) {}
+    return res.json(user);
+  } catch (error) {
+    return res.status(500).json({ errors: error });
+  }
 }
 
 export async function updateUser(req, res) {
   const { username, email } = req.body;
-  console.log('update');
   try {
     const user = await Profile.findByIdAndUpdate(req.user.userId, {
       username,
       email,
     });
     return res.status(200).json({ user });
-  } catch (error) {}
+  } catch (error) {
+    return res.status(500).json({ errors: error });
+  }
 }
 
 export function googleLogin(req, res) {
@@ -186,7 +181,7 @@ export function googleLogin(req, res) {
     });
 }
 
-// create token code for user to verify email
+// create token code for user to verify email and reset password
 export async function generatePassCode(req, res) {
   const { email } = req.body;
   try {
@@ -195,14 +190,14 @@ export async function generatePassCode(req, res) {
     if (!user) return res.status(404).json({ errors: ['Email was not found'] });
 
     //create random token and save it into reset password
-    const token = crypto.randomBytes(8).toString('hex');
+    const token = crypto.randomBytes(6).toString('hex');
     var reset = await ResetPassword.findOne({ userId: user._id });
     if (!reset) {
       reset = new ResetPassword({});
     }
     reset.userId = user._id;
     reset.token = token;
-    reset.expire = expireTime();
+    reset.expire_in = expireTime();
     await reset.save();
 
     // Send email to user with the code generated
@@ -224,6 +219,36 @@ export async function generatePassCode(req, res) {
     await transporter.sendMail(mailOptions);
     return res.status(200).json({ success: 'Token was created' });
   } catch (error) {
+    console.log(error);
+    return res.status(500).json({ errors: error });
+  }
+}
+
+// verify that user reset code is corect
+export async function verifyResetCode(req, res) {
+  const { email, code } = req.body;
+  try {
+    // look for user with this email
+    const user = await Profile.findOne({ email });
+    if (!user) return res.status(404).json({ errors: ['Email was not found'] });
+
+    const resetToken = await ResetPassword.findOne({ userId: user._id });
+    if (!resetToken)
+      return res
+        .status(404)
+        .json({ errors: ['No reset passcode found for this email'] });
+
+    if (resetToken.token !== code) {
+      return res
+        .status(400)
+        .json({ errors: ['Code does not match reset passcode'] });
+    }
+
+    resetToken.used = true;
+    resetToken.save();
+
+    return res.status(200).json({ success: 'passcode was verified' });
+  } catch (error) {
     return res.status(500).json({ errors: error });
   }
 }
@@ -234,13 +259,40 @@ function expireTime() {
   return today;
 }
 
-// verify that user code is corect
-export async function verifyResetCode(req, res) {
-  const { email, code } = req.body;
-  try {
-    const resetToken = await ResetPassword.findOne({ email });
-  } catch (error) {}
-}
-
 // update password
-export async function updatePassword(req, res) {}
+export async function updatePassword(req, res) {
+  const { email, password } = req.body;
+
+  // make sure email and password are provided
+  const errors = [];
+  if (!email) errors.push('Email is required');
+  if (!password) errors.push('Password is required');
+  console.log(errors);
+
+  if (errors.length > 0) return res.status(422).json({ errors: errors });
+
+  try {
+    const user = await Profile.findOne({ email });
+    // user not found
+    if (!user) {
+      return res
+        .status(404)
+        .json({ errors: ['user with that email not found'] });
+    }
+
+    // hash and save new password
+    const salt = await bcrypt.genSalt(HASH_DIGIT);
+    const hashedPassword = await bcrypt.hash(password, salt);
+    if (!hashedPassword) {
+      return res
+        .status(500)
+        .json({ errors: 'Something went wrong with Bcrypt' });
+    }
+
+    user.password = hashedPassword;
+    await user.save();
+    return res.status(200).json({ success: 'password has been updated' });
+  } catch (error) {
+    return res.status(500).json({ errors: error });
+  }
+}
