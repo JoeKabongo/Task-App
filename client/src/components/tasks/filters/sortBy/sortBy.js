@@ -28,22 +28,35 @@ export default function SortTaskOption(props) {
     'Alphabetically',
   ]);
   const [tasks, setTasks] = useState([]);
+  const [currentOption, setCurrentOption] = useState('Added Date');
+
   useEffect(() => {
     setTasks(props.tasks);
   }, [props]);
-  const [currentOption, setCurrentOption] = useState('Due Date');
 
-  // update the category selection
+  //uptate sort by filter
   const handleChange = (event) => {
     const value = event.target.value;
     setCurrentOption(value);
-
-    const newTasks = tasks.sort((a, b) => (a.name > b.name ? 1 : -1));
-
-    props.updateState('tasks', newTasks);
+    props.updateState('tasks', sortTasks(value));
   };
 
-  const sort;
+  // sort tasks
+  const sortTasks = (value) => {
+    if (value === 'Alphabetically')
+      return tasks.sort((a, b) => (a.name > b.name ? 1 : -1));
+    else if (value === 'Added Date')
+      return tasks.sort((a, b) => (a.dateCreated > b.dateCreated ? 1 : -1));
+    else if (value === 'Due Date')
+      return tasks.sort((a, b) => {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        if (a.dueDate > b.dueDate) return 1;
+        return -1;
+      });
+
+    return tasks;
+  };
 
   return (
     <section style={{ display: 'inline-block' }}>
