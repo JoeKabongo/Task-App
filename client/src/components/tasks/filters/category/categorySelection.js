@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
-import axios from '../../../api/index';
+import axios from '../../../../api/index';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -79,7 +79,7 @@ export default function CategorySelection(props) {
   }
 
   return (
-    <section>
+    <section style={{ display: 'inline-block' }}>
       <DeleteCategoryForm
         categories={categories}
         show={showDeleteForm}
@@ -91,7 +91,6 @@ export default function CategorySelection(props) {
           display: 'flex',
           justifyContent: 'center',
           justifyItems: 'center',
-          marginTop: '10px',
         }}
       >
         <FormControl className={classes.formControl}>

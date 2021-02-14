@@ -4,8 +4,9 @@ import axios from '../../api/index';
 import AddTaskForm from './addTaskForm/addTask';
 import DeleteConfirmation from './deleteConfirmation/deleteConfirmation';
 import TaskDetail from './taskDetail/taskDetail';
-import CategorySelection from './category/categorySelection';
+import CategorySelection from './filters/category/categorySelection';
 import TaskList from './taskList/taskList';
+import Filters from './filters/filters';
 import { AlertMessageContext } from '../../app';
 
 export default function TaskDisplay(props) {
@@ -110,12 +111,19 @@ export default function TaskDisplay(props) {
     <>
       <section>
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
             <h1>
               {state.category === 'None' ? 'All' : `${state.category.name}`}{' '}
               Tasks
             </h1>
-            <CategorySelection
+            <Filters
+              tasks={state.tasks}
               categoryList={state.categoryList}
               updateState={updateState}
               category={state.category}
