@@ -137,7 +137,7 @@ export default function LoginForm(props) {
         <p style={{ margin: '0px' }}>
           <Link to="resetpassword"> Forgot password</Link>
         </p>
-        <LoginWithGoogle />
+        <LoginWithGoogle saveUser={saveUser} />
       </form>
     </section>
   );

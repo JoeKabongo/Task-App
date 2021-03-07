@@ -143,7 +143,7 @@ export default function SignupForm(props) {
         <p>
           Have an account already? <Link to="login"> Login Here</Link>
         </p>
-        <LoginWithGoogle />
+        {/* <LoginWithGoogle /> */}
       </form>
     </section>
   );

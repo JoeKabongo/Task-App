@@ -5,6 +5,7 @@ import Task from '../models/task.js';
 export async function getTasks(req, res) {
   try {
     const tasks = await Task.find({ userId: req.user.userId });
+    console.log(tasks);
     return res.status(200).json(tasks);
   } catch (error) {
     console.log(error);

@@ -32,7 +32,7 @@ export async function signup(req, res) {
   if (!password) errors.push('password is required');
   if (password !== confirmationPassword) errors.push('passwords do not match');
 
-  if (errors.length > 1) {
+  if (errors.length >= 1) {
     return res.send(422).json({ errors });
   }
 
@@ -42,7 +42,6 @@ export async function signup(req, res) {
       return res.status(422).json({ errors: ['Email already taken'] });
     } else {
       const newProfile = new Profile({ username, email, password });
-
       // hashpassword
       const salt = await bcrypt.genSalt(process.HASH_DIGIT);
       if (!salt) {
@@ -61,7 +60,7 @@ export async function signup(req, res) {
       newProfile.password = hashedPassword;
       await newProfile.save();
 
-      // create a JWT token for the user
+      // create a JWT token for the user and send request
       const access_token = createJWT(
         newProfile.email,
         newProfile._id,
@@ -145,40 +144,40 @@ export async function updateUser(req, res) {
   }
 }
 
-export function googleLogin(req, res) {
-  const { tokenId, username } = req.body;
-  client
-    .verifyIdToken({
+export async function googleLogin(req, res) {
+  const { tokenId } = req.body;
+  if (!tokenId) return res.status(400).json({ message: 'wrong request' });
+
+  try {
+    const clientResponse = await googleClient.verifyIdToken({
       idToken: tokenId,
-      audience: googleClient,
-    })
-    .then((response) => {
-      const { email_verified, name, email } = response.payload;
-      if (email_verified) {
-        Profile.findOne({ email }).exec((error, user) => {
-          if (error) {
-            return res.status(400).json({ error: error.message });
-          } else {
-            if (user) {
-              return res.status(200).json({ x: 'user already logged in' });
-            } else {
-              let password = email + name;
-              const newProfile = new Profile({ name, email, password });
-              newProfile.save((error, data) => {
-                if (error) {
-                  return res.status(400).json({ error: error.message });
-                }
-                return res.status(200).json(data);
-              });
-            }
-          }
-        });
-      }
-      console.log(email_verified, name, email);
-    })
-    .catch((error) => {
-      console.log(error);
     });
+
+    const { email_verified, name, email } = clientResponse.payload;
+    if (email_verified) {
+      console.log('Verfieid');
+      const user = await Profile.findOne({ email });
+      if (user) {
+        const access_token = createJWT(user.email, user._id, tokenDuration);
+        console.log('NAAAA');
+        return res.status(200).json({
+          jwtToken: access_token,
+          user: {
+            id: user._id,
+            username: user.username,
+            email: user.email,
+          },
+        });
+      } else {
+        return res.status(404).json({ message: 'Email not registered yet' });
+      }
+    } else {
+      console.log('not verified');
+      return res.status(500).json({ message: 'email not verified' });
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // create token code for user to verify email and reset password
@@ -281,7 +280,7 @@ export async function updatePassword(req, res) {
     }
 
     // hash and save new password
-    const salt = await bcrypt.genSalt(HASH_DIGIT);
+    const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     if (!hashedPassword) {
       return res
@@ -293,6 +292,7 @@ export async function updatePassword(req, res) {
     await user.save();
     return res.status(200).json({ success: 'password has been updated' });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ errors: error });
   }
 }

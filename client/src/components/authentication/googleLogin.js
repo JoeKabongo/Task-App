@@ -2,7 +2,24 @@ import React from 'react';
 import GoogleLogin from 'react-google-login';
 import axios from '../../api/index';
 import key from './key';
-export default function LoginWithGoogle() {
+export default function LoginWithGoogle({ saveUser }) {
+  const responseSuccess = async (googleResponse) => {
+    try {
+      const response = await axios.post('/auth/googlelogin', {
+        tokenId: googleResponse.tokenId,
+        username: googleResponse.profileObj.name,
+      });
+      const { jwtToken, user } = response.data;
+      saveUser(jwtToken, user);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const responseFailure = (response) => {
+    console.log(response);
+  };
+
   return (
     <GoogleLogin
       clientId={key}
@@ -13,21 +30,3 @@ export default function LoginWithGoogle() {
     />
   );
 }
-
-const responseSuccess = (response) => {
-  console.log(response);
-  console.log(response.tokenId);
-  // axios
-  //   .post('/auth/googlelogin', {
-  //     tokenId: response.tokenId,
-  //     username: response.profileObj.name,
-  //   })
-  //   .then((response) => {
-  //     console.log(response);
-  //   })
-  //   .catch((error) => console.log(response));
-};
-
-const responseFailure = (response) => {
-  console.log(response);
-};

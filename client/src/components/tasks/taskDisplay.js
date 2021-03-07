@@ -36,7 +36,7 @@ export default function TaskDisplay(props) {
       } catch (error) {
         showAlertMessage({
           display: true,
-          messages: error.response.data.errors,
+          messages: ['Something went wrong'],
           type: 'error',
         });
         setState({ ...state, isLoading: false });

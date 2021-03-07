@@ -3,12 +3,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
-
 import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import AddIcon from '@material-ui/icons/Add';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
