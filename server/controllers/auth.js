@@ -27,34 +27,57 @@ export async function signup(req, res) {
 
   // make sure the request has valid fields
   const errors = [];
-  if (!username) errors.push('name is required');
-  if (!email) errors.push('email is required');
-  if (!password) errors.push('password is required');
-  if (password !== confirmationPassword) errors.push('passwords do not match');
+  if (!username) {
+    errors.push({
+      error: 'bad request',
+      message: 'name is required in the request',
+    });
+  }
+  if (!email) {
+    errors.push({
+      error: 'bad request',
+      message: 'email is required in the request',
+    });
+  }
+  if (!password) {
+    errors.push({
+      error: 'bad request',
+      message: 'password is required in the request',
+    });
+  }
+  if (password !== confirmationPassword) {
+    errors.push({ error: 'bad request', message: 'passwords do not match' });
+  }
 
-  if (errors.length >= 1) {
-    return res.send(422).json({ errors });
+  // request did not provided all required field
+  if (errors.length > 0) {
+    return res.send(400).json({ errors });
   }
 
   try {
     const user = await Profile.findOne({ email });
     if (user) {
-      return res.status(422).json({ errors: ['Email already taken'] });
+      return res
+        .status(409)
+        .json({ error: 'Duplicate content', message: 'Email already taken' });
     } else {
       const newProfile = new Profile({ username, email, password });
+
       // hashpassword
       const salt = await bcrypt.genSalt(process.HASH_DIGIT);
       if (!salt) {
-        return res
-          .status(500)
-          .json({ errors: 'Something went wrong with Bcrypt' });
+        return res.status(500).json({
+          error: 'Internal Server Error',
+          message: 'Something went wrong in the server',
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, salt);
       if (!hashedPassword) {
-        return res
-          .status(500)
-          .json({ errors: 'Something went wrong with Bcrypt' });
+        return res.status(500).json({
+          error: 'Internal Server',
+          message: 'Something went wrong with Bcrypt',
+        });
       }
 
       newProfile.password = hashedPassword;
@@ -77,7 +100,10 @@ export async function signup(req, res) {
       });
     }
   } catch (err) {
-    return res.status(500).json({ errors: err });
+    return res.status(500).json({
+      error: 'Internal server error',
+      message: 'something went wrong on our server',
+    });
   }
 }
 
@@ -86,24 +112,36 @@ export async function login(req, res) {
 
   // check that all required fields are there
   const errors = [];
-  if (!password) errors.push('password is required');
-  if (!email) errors.push('email is required');
-  if (errors.length > 0) return res.status(422).json({ errors: errors });
+  if (!email) {
+    errors.push({
+      error: 'bad request',
+      message: 'email is required in the request',
+    });
+  }
+  if (!password) {
+    errors.push({
+      error: 'bad request',
+      message: 'password is required in the request',
+    });
+  }
+  if (errors.length > 0) return res.status(400).json({ errors });
 
   try {
     const user = await Profile.findOne({ email });
 
     // user with such email not found
     if (!user)
-      return res
-        .status(404)
-        .status(404)
-        .json({ errors: ['User with such email not found'] });
+      return res.status(404).json({
+        error: '404 error ',
+        message: 'User with such email not found',
+      });
 
     // make sure password match
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
-      return res.status(400).json({ errors: ['incorrect password'] });
+      return res
+        .status(403)
+        .json({ error: 'invalid password', message: 'incorrect password' });
 
     // create a JWT token for the user
     const access_token = createJWT(user.email, user._id, tokenDuration);
@@ -116,23 +154,56 @@ export async function login(req, res) {
       },
     });
   } catch (error) {
-    return res.status(500).json({ errors: error });
+    return res.status(500).json({
+      error: 'Server side error',
+      message: 'something went wrong on the server',
+    });
   }
 }
 
 export async function getUser(req, res) {
+  if (!req.user) {
+    return res.status(401).json({
+      error: 'Unauthorized error ',
+      message: 'User is not authorized to view this information',
+    });
+  }
+
   try {
     const user = await Profile.findById(req.user.userId);
-    if (!user) res.status(400).json({ errors: ['User was not found'] });
-
+    if (!user) {
+      res.status(404).json({
+        error: 'Not found error',
+        message: 'User was not found',
+      });
+    }
     return res.json(user);
   } catch (error) {
-    return res.status(500).json({ errors: error });
+    return res.status(500).json({
+      error: 'Server side error',
+      message: 'something went wrong on the server',
+    });
   }
 }
 
 export async function updateUser(req, res) {
   const { username, email } = req.body;
+  // check that all required fields are there
+  const errors = [];
+  if (!username) {
+    errors.push({
+      error: 'bad request',
+      message: 'username is required in the request',
+    });
+  }
+  if (!email) {
+    errors.push({
+      error: 'bad request',
+      message: 'email is required in the request',
+    });
+  }
+  if (errors.length > 0) return res.status(400).json({ errors });
+
   try {
     const user = await Profile.findByIdAndUpdate(req.user.userId, {
       username,
@@ -140,26 +211,38 @@ export async function updateUser(req, res) {
     });
     return res.status(200).json({ user });
   } catch (error) {
-    return res.status(500).json({ errors: error });
+    return res.status(500).json({
+      error: 'Server side error',
+      message: 'something went wrong on the server',
+    });
   }
 }
 
 export async function googleLogin(req, res) {
   const { tokenId } = req.body;
-  if (!tokenId) return res.status(400).json({ message: 'wrong request' });
+
+  // no tokenId provided return bad request code
+  if (!tokenId) {
+    return res
+      .status(400)
+      .json({ error: 'bad request', message: 'Token id is required' });
+  }
 
   try {
+    // verify the token
     const clientResponse = await googleClient.verifyIdToken({
       idToken: tokenId,
     });
 
-    const { email_verified, name, email } = clientResponse.payload;
+    const { email_verified, email } = clientResponse.payload;
+
+    // proceed only if email was verified
     if (email_verified) {
-      console.log('Verfieid');
       const user = await Profile.findOne({ email });
+
+      // make sure this email was already registerd, then send a new response with token
       if (user) {
         const access_token = createJWT(user.email, user._id, tokenDuration);
-        console.log('NAAAA');
         return res.status(200).json({
           jwtToken: access_token,
           user: {
@@ -169,24 +252,42 @@ export async function googleLogin(req, res) {
           },
         });
       } else {
-        return res.status(404).json({ message: 'Email not registered yet' });
+        return res.status(404).json({
+          error: 'Not found error',
+          message: 'Email not found in server database',
+        });
       }
     } else {
-      console.log('not verified');
-      return res.status(500).json({ message: 'email not verified' });
+      return res
+        .status(400)
+        .json({ error: 'authentication', message: 'email was not verified' });
     }
   } catch (error) {
-    console.log(error);
+    return res.status(500).json({
+      error: 'Server side error',
+      message: 'something went wrong on the server',
+    });
   }
 }
 
 // create token code for user to verify email and reset password
 export async function generatePassCode(req, res) {
   const { email } = req.body;
+
+  // make sure request is valid with email field
+  if (!email) {
+    return res
+      .status(400)
+      .json({ error: 'bad request', message: 'Email is required' });
+  }
   try {
     // look for user with this email
     const user = await Profile.findOne({ email });
-    if (!user) return res.status(404).json({ errors: ['Email was not found'] });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ error: 'Not found error', message: 'Email was not found' });
+    }
 
     //create random token and save it into reset password
     const token = crypto.randomBytes(6).toString('hex');
@@ -218,37 +319,68 @@ export async function generatePassCode(req, res) {
     await transporter.sendMail(mailOptions);
     return res.status(200).json({ success: 'Token was created' });
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ errors: error });
+    return res.status(500).json({
+      error: 'Server side error',
+      message: 'something went wrong on the server',
+    });
   }
 }
 
 // verify that user reset code is corect
 export async function verifyResetCode(req, res) {
   const { email, code } = req.body;
+
+  // make sure the request have required fields
+  const errors = [];
+  if (!email) {
+    errors.push({
+      error: 'bad request',
+      message: 'There must be a email field in the requeset',
+    });
+  }
+
+  if (!code) {
+    errors.push({
+      error: 'bad request',
+      message: 'There must be a email field in the requeset',
+    });
+  }
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
+
   try {
     // look for user with this email
     const user = await Profile.findOne({ email });
-    if (!user) return res.status(404).json({ errors: ['Email was not found'] });
+    if (!user) {
+      return res.status(404).json({
+        error: 'Not found error',
+        message: 'User with such email not found',
+      });
+    }
 
     const resetToken = await ResetPassword.findOne({ userId: user._id });
     if (!resetToken)
-      return res
-        .status(404)
-        .json({ errors: ['No reset passcode found for this email'] });
+      return res.status(404).json({
+        error: 'Not found error',
+        message: 'No reset passcode found for this email',
+      });
 
     if (resetToken.token !== code) {
-      return res
-        .status(400)
-        .json({ errors: ['Code does not match reset passcode'] });
+      return res.status(400).json({
+        error: 'Incorrect code',
+        message: 'Reset code is incorrect!',
+      });
     }
 
     resetToken.used = true;
     resetToken.save();
-
     return res.status(200).json({ success: 'passcode was verified' });
   } catch (error) {
-    return res.status(500).json({ errors: error });
+    return res.status(500).json({
+      error: 'Server side error',
+      message: 'something went wrong on the server',
+    });
   }
 }
 
@@ -263,20 +395,33 @@ export async function updatePassword(req, res) {
   const { email, password } = req.body;
 
   // make sure email and password are provided
+  // check that all required fields are there
   const errors = [];
-  if (!email) errors.push('Email is required');
-  if (!password) errors.push('Password is required');
-  console.log(errors);
-
-  if (errors.length > 0) return res.status(422).json({ errors: errors });
+  if (!email) {
+    errors.push({
+      error: 'bad request',
+      message: 'Email is required in the request',
+    });
+  }
+  if (!password) {
+    errors.push({
+      error: 'bad request',
+      message: 'Password is required in the request',
+    });
+  }
+  if (errors.length > 0) return res.status(400).json({ errors });
 
   try {
     const user = await Profile.findOne({ email });
+
     // user not found
     if (!user) {
       return res
         .status(404)
-        .json({ errors: ['user with that email not found'] });
+        .json({
+          error: 'Not found error',
+          message: 'user with that email not found',
+        });
     }
 
     // hash and save new password
@@ -285,7 +430,10 @@ export async function updatePassword(req, res) {
     if (!hashedPassword) {
       return res
         .status(500)
-        .json({ errors: 'Something went wrong with Bcrypt' });
+        .json({
+          error: 'Server error',
+          message: 'Something went wrong on the server',
+        });
     }
 
     user.password = hashedPassword;
@@ -293,6 +441,9 @@ export async function updatePassword(req, res) {
     return res.status(200).json({ success: 'password has been updated' });
   } catch (error) {
     console.log(error);
-    return res.status(500).json({ errors: error });
+    return res.status(500).json({
+      error: 'Server side error',
+      message: 'something went wrong on the server',
+    });
   }
 }
