@@ -46,14 +46,20 @@ export default function TaskDetail(props) {
   // save a task
   const saveTask = async (e) => {
     e.preventDefault();
-    await axios.put(`/tasks/update/${task._id}`, {
-      ...task,
-      category: task.category === '' ? null : task.category,
-    });
-    const newTasks = props.allTasks.map((element) =>
-      element._id === task._id ? task : element
-    );
-    props.setTasks('tasks', newTasks);
+
+    try {
+      const response = await axios.put(`/tasks/update/${task._id}`, {
+        ...task,
+        category: task.category === '' ? null : task.category,
+      });
+
+      const newTasks = props.allTasks.map((element) =>
+        element._id === task._id ? response.data : element
+      );
+      props.setTasks('tasks', newTasks);
+    } catch (error) {
+      alert('something went wrong');
+    }
   };
 
   return (
@@ -70,6 +76,7 @@ export default function TaskDetail(props) {
                 value={task.name}
                 onChange={(e) => handleTaskChange('name', e.target.value)}
                 inputProps={{ maxLength: 100 }}
+                required
               />
             </FormControl>
             <MuiPickersUtilsProvider

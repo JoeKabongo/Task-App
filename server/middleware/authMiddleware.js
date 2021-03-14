@@ -13,6 +13,12 @@ export default function requireAuth(req, res, next) {
       next();
     });
   } else {
-    return res.status(404).json({ errors: ['You must be loggin first'] });
+    return res
+      .status(404)
+      .json({
+        error: 'Authorization',
+        message:
+          'you are not authorized to view this information. You must be logged in',
+      });
   }
 }

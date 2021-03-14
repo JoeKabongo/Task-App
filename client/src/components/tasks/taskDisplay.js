@@ -93,6 +93,7 @@ export default function TaskDisplay(props) {
         messages: ['task have been deleted'],
         type: 'success',
       });
+      console.log('DELETED');
     } catch (error) {
       console.log(error);
     }

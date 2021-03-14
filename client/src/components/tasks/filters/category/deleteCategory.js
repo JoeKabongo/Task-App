@@ -20,7 +20,8 @@ export default function DeleteCategoryForm(props) {
   // delete  category
   const deleteCategory = async (id) => {
     try {
-      await axios.delete(`category/delete/${id}`);
+      const response = await axios.delete(`category/delete/${id}`);
+      console.log(response.data);
 
       props.updateState(
         'categoryList',
