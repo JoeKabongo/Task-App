@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useStyles from './style';
 import axios from '../../../../api/index';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';

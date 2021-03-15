@@ -4,10 +4,10 @@ import axios from '../../api/index';
 import AddTaskForm from './addTaskForm/addTask';
 import DeleteConfirmation from './deleteConfirmation/deleteConfirmation';
 import TaskDetail from './taskDetail/taskDetail';
-import CategorySelection from './filters/category/categorySelection';
 import TaskList from './taskList/taskList';
 import Filters from './filters/filters';
 import { AlertMessageContext } from '../../app';
+import { displayErrorMessages } from '../../utils/errorHelper';
 
 export default function TaskDisplay(props) {
   const showAlertMessage = useContext(AlertMessageContext);
@@ -34,11 +34,14 @@ export default function TaskDisplay(props) {
           categoryList: requestCategories.data,
         });
       } catch (error) {
-        showAlertMessage({
-          display: true,
-          messages: ['Something went wrong'],
-          type: 'error',
-        });
+        displayErrorMessages(error, showAlertMessage);
+        // const errorMessages = getErrorMessages(error);
+        // showAlertMessage({
+        //   display: true,
+        //   messages: errorMessages ? errorMessages : ['Something went wrong'],
+        //   type: 'error',
+        // });
+
         setState({ ...state, isLoading: false });
       }
     };

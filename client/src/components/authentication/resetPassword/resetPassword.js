@@ -66,7 +66,7 @@ export default function ResetPassword() {
   const submitNewPassword = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put('/auth/resetpassword', {
+      await axios.put('/auth/resetpassword', {
         email: state.email,
         password: state.password,
       });

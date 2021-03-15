@@ -3,6 +3,11 @@ import Task from '../models/task.js';
 
 // Get all tasks for a user
 export async function getTasks(req, res) {
+  // return res.status(500).json({
+  //   error: 'Server error',
+  //   message: 'Something went wrong on the server',
+  // });
+
   if (!req.user) {
     return res.status(401).json({
       error: 'Unauthorized error ',

@@ -27,12 +27,6 @@ export default function AddTaskForm({ tasks, setTasks, category }) {
     category: '',
   });
 
-  // update task
-  const handleTaskChange = (name, value) => {
-    const newTask = { ...task, [name]: value };
-    setTask(newTask);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     // only update tasks if user entered some text

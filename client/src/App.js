@@ -10,7 +10,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Navbar from '../src/components/navBar/navbar';
 import TaskDisplay from '../src/components/tasks/taskDisplay';
-import ErrorPage from '../src/components/errorPage/errorPage';
 import SignupForm from '../src/components/authentication/signup';
 import LoginForm from '../src/components/authentication/login';
 import Profile from '../src/components/profile/profile';
