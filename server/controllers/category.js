@@ -51,6 +51,7 @@ export async function getCategories(req, res) {
 // delete a user's category
 export async function deleteCategory(req, res) {
   const { id } = req.params;
+
   try {
     // delete the catetory and the tasks associated with it
     const category = await Category.findOneAndDelete({

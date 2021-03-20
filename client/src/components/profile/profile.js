@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FilledInput from '@material-ui/core/FilledInput';
@@ -7,9 +7,16 @@ import { Button } from '@material-ui/core';
 import useStyles from './style';
 import axios from '../../api/index';
 
+import { AlertMessageContext } from '../../app';
+import {
+  displayErrorMessages,
+  displaySuccessMessages,
+} from '../../utils/alertMessage';
+
 export default function Profile(props) {
   const { user } = props;
   const classes = useStyles();
+  const setAlertState = useContext(AlertMessageContext);
 
   const [state, setState] = useState({
     user: user,
@@ -31,8 +38,9 @@ export default function Profile(props) {
           email: state.updateUser.email,
         },
       });
+      displaySuccessMessages(['profile has been updated'], setAlertState);
     } catch (error) {
-      console.log('something went wrong');
+      displayErrorMessages(error, setAlertState);
     }
   };
 

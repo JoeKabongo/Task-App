@@ -3,11 +3,6 @@ import Task from '../models/task.js';
 
 // Get all tasks for a user
 export async function getTasks(req, res) {
-  // return res.status(500).json({
-  //   error: 'Server error',
-  //   message: 'Something went wrong on the server',
-  // });
-
   if (!req.user) {
     return res.status(401).json({
       error: 'Unauthorized error ',
@@ -63,7 +58,7 @@ export async function deleteTask(req, res) {
   const { id } = req.params;
   try {
     // delete the catetory and the tasks associated with it
-    const task = await Category.findOneAndDelete({
+    const task = await Task.findOneAndDelete({
       _id: id,
       userId: req.user.userId,
     });
@@ -77,6 +72,7 @@ export async function deleteTask(req, res) {
 
     return res.status(200).json({ message: 'Task was deleted' });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       error: 'Server error',
       message: 'Something went wrong on the server',

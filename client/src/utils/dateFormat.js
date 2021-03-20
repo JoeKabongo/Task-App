@@ -33,19 +33,24 @@ export default function formatDate(taskDate) {
   const yearDisplay = new Date().getFullYear() === year ? '' : `, ${year}`;
   return `${status} ${dayOfTheWeek}, ${month}  ${date}${yearDisplay}`;
 }
+
+// check if this date is today
 function isToday(date) {
-  return isEqual(new Date(), date);
+  return areEqual(new Date(), date);
 }
-function isEqual(date1, date2) {
+
+// check if this date is tomorrow
+function isTomorrow(taskDate) {
+  const today = new Date();
+  today.setDate(today.getDate() + 1);
+  return areEqual(taskDate, today);
+}
+
+// check if two date are equal
+function areEqual(date1, date2) {
   return (
     date1.getDate() === date2.getDate() &&
     date1.getMonth() === date2.getMonth() &&
     date1.getFullYear() === date2.getFullYear()
   );
-}
-
-function isTomorrow(taskDate) {
-  const today = new Date();
-  today.setDate(today.getDate() + 1);
-  return isEqual(taskDate, today);
 }

@@ -8,7 +8,6 @@ import FilledInput from '@material-ui/core/FilledInput';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import axios from '../../../api/index';
-
 import useStyles from './style';
 import {
   MuiPickersUtilsProvider,
@@ -18,8 +17,15 @@ import {
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
+import { AlertMessageContext } from '../../../app';
+import {
+  displayErrorMessages,
+  displaySuccessMessages,
+} from '../../../utils/alertMessage';
+
 export default function TaskDetail(props) {
   const classes = useStyles();
+  const setAlertState = React.useContext(AlertMessageContext);
 
   const { categoryList } = props;
 
@@ -57,8 +63,9 @@ export default function TaskDetail(props) {
         element._id === task._id ? response.data : element
       );
       props.setTasks('tasks', newTasks);
+      displaySuccessMessages(['task has been saved'], setAlertState);
     } catch (error) {
-      alert('something went wrong');
+      displayErrorMessages(error, setAlertState);
     }
   };
 

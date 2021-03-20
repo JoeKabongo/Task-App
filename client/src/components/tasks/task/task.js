@@ -6,7 +6,7 @@ import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined'
 import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
 import style from './style';
 import CalendarTodayOutlinedIcon from '@material-ui/icons/CalendarTodayOutlined';
-import formatDate from '../dateFormat';
+import formatDate from '../../../utils/dateFormat';
 
 export default function Task(props) {
   const { name, isCompleted, dueDate } = props.task;

@@ -41,6 +41,7 @@ export default function App() {
 
   const setAlertState = (options) => {
     setState({ ...state, alert: options });
+    console.log('Alert yessss');
   };
 
   const saveUser = (token, newUser) => {

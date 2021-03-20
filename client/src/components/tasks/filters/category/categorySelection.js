@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -11,8 +11,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
-import axios from '../../../../api/index';
 
+import axios from '../../../../api/index';
+import { displayErrorMessages } from '../../../../utils/alertMessage';
+import { AlertMessageContext } from '../../../../app';
 const useStyles = makeStyles((theme) => ({
   formControl: {
     margin: theme.spacing(1),
@@ -30,6 +32,8 @@ export default function CategorySelection(props) {
   const [showForm, setShowForm] = useState(false);
   const [showDeleteForm, setShowDeleteForm] = useState(false);
   const [newCategory, setNewCategory] = useState('');
+
+  const setAlertState = useContext(AlertMessageContext);
 
   useEffect(() => {
     setCategories(props.categoryList);
@@ -56,7 +60,7 @@ export default function CategorySelection(props) {
       setShowForm(false);
       props.updateState('categoryList', [...props.categoryList, response.data]);
     } catch (error) {
-      console.log(error);
+      displayErrorMessages(error, setAlertState);
     }
   };
 

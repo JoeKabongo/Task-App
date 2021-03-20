@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import clsx from 'clsx';
 import IconButton from '@material-ui/core/IconButton';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
@@ -13,17 +13,21 @@ import { Link } from 'react-router-dom';
 import axios from '../../api/index';
 import useStyles from './style';
 
+import { AlertMessageContext } from '../../app';
+import { displayErrorMessages } from '../../utils/alertMessage';
+
 export default function SignupForm(props) {
   const classes = useStyles();
   const { saveUser, setAlert, alertDisplayed } = props;
 
-  const [values, setValues] = React.useState({
+  const [values, setValues] = useState({
     username: '',
     email: '',
     password: '',
     showPassword: false,
   });
 
+  const setAlertState = useContext(AlertMessageContext);
   // change a state when a textfield is changed
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -44,32 +48,23 @@ export default function SignupForm(props) {
   };
 
   // submit form
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (values.username && values.email && values.password) {
-      axios
-        .post('/auth/signup', {
+      try {
+        const response = await axios.post('/auth/signup', {
           email: values.email,
           username: values.username,
           password: values.password,
           confirmationPassword: values.password,
-        })
-        .then((response) => {
-          // save user information
-          const { jwtToken, user } = response.data;
-          saveUser(jwtToken, user);
-        })
-        .catch((err) => {
-          // display error message
-          setAlert({
-            display: true,
-            messages: err.response
-              ? err.response.data.errors
-              : ['Something went wrong'],
-            type: 'error',
-          });
         });
+
+        const { jwtToken, user } = response.data;
+        saveUser(jwtToken, user);
+      } catch (error) {
+        displayErrorMessages(error, setAlertState);
+      }
     } else {
       setValues({
         ...values,

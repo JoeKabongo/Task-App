@@ -1,14 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import useStyles from './style';
 import axios from '../../../../api/index';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 
+import { displayErrorMessages } from '../../../../utils/alertMessage';
+import { AlertMessageContext } from '../../../../app';
+
 export default function DeleteCategoryForm(props) {
   const classes = useStyles();
   const [catStatus, setCatStatus] = useState([]);
   const [show, setShow] = useState(false);
+  const setAlertState = useContext(AlertMessageContext);
 
   useEffect(() => {
     setCatStatus(props.categories);
@@ -19,14 +23,12 @@ export default function DeleteCategoryForm(props) {
   const deleteCategory = async (id) => {
     try {
       const response = await axios.delete(`category/delete/${id}`);
-      console.log(response.data);
-
       props.updateState(
         'categoryList',
         props.categories.filter((cat) => cat._id !== id)
       );
-    } catch (e) {
-      alert('Could not delete, something went wrong');
+    } catch (error) {
+      displayErrorMessages(error, setAlertState);
     }
   };
 

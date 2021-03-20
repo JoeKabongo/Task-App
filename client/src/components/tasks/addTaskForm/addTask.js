@@ -5,6 +5,10 @@ import Button from '@material-ui/core/Button';
 
 import axios from '../../../api/index';
 import { AlertMessageContext } from '../../../app';
+import {
+  displaySuccessMessages,
+  displayErrorMessages,
+} from '../../../utils/alertMessage';
 
 const useStyles = makeStyles((theme) => ({
   // root: {
@@ -14,8 +18,8 @@ const useStyles = makeStyles((theme) => ({
   // },
 }));
 
-export default function AddTaskForm({ tasks, setTasks, category }) {
-  const setAlertMessage = useContext(AlertMessageContext);
+export default function AddTaskForm({ tasks, setState, category }) {
+  const setAlertState = useContext(AlertMessageContext);
   const [textValue, setTextValue] = useState('');
   const classes = useStyles();
 
@@ -27,7 +31,7 @@ export default function AddTaskForm({ tasks, setTasks, category }) {
     category: '',
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // only update tasks if user entered some text
     if (textValue) {
@@ -38,24 +42,17 @@ export default function AddTaskForm({ tasks, setTasks, category }) {
         category: category === 'None' ? null : category._id,
       };
 
-      axios
-        .post('/tasks/create', newTask)
-        .then((res) => {
-          setTasks('tasks', [res.data, ...tasks]);
-          setTextValue('');
-          setAlertMessage({
-            display: true,
-            type: 'success',
-            messages: [`${textValue} was  successfully added to your task`],
-          });
-        })
-        .catch((_) => {
-          setAlertMessage({
-            display: true,
-            type: 'error',
-            messages: ['Could not add task, something went wrong!'],
-          });
-        });
+      try {
+        const response = await axios.post('/tasks/create', newTask);
+        setState('tasks', [response.data, ...tasks]);
+        setTextValue('');
+        displaySuccessMessages(
+          [`${textValue} was  successfully added to your task`],
+          setAlertState
+        );
+      } catch (error) {
+        displayErrorMessages(error, setAlertState);
+      }
     }
   };
 

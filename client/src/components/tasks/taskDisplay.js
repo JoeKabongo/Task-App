@@ -7,10 +7,11 @@ import TaskDetail from './taskDetail/taskDetail';
 import TaskList from './taskList/taskList';
 import Filters from './filters/filters';
 import { AlertMessageContext } from '../../app';
-import { displayErrorMessages } from '../../utils/errorHelper';
+import { getErrorMessages } from '../../utils/errorHandler';
+import { displayAlertMessages } from '../../utils/alertMessage';
 
 export default function TaskDisplay(props) {
-  const showAlertMessage = useContext(AlertMessageContext);
+  const setAlertState = useContext(AlertMessageContext);
   const [state, setState] = useState({
     tasks: [],
     isLoading: true,
@@ -34,14 +35,10 @@ export default function TaskDisplay(props) {
           categoryList: requestCategories.data,
         });
       } catch (error) {
-        displayErrorMessages(error, showAlertMessage);
-        // const errorMessages = getErrorMessages(error);
-        // showAlertMessage({
-        //   display: true,
-        //   messages: errorMessages ? errorMessages : ['Something went wrong'],
-        //   type: 'error',
-        // });
-
+        displayAlertMessages(
+          { messages: getErrorMessages(error), type: 'error' },
+          setAlertState
+        );
         setState({ ...state, isLoading: false });
       }
     };
@@ -65,11 +62,10 @@ export default function TaskDisplay(props) {
 
       setState({ ...state, tasks: newTasks });
     } catch (error) {
-      showAlertMessage({
-        display: true,
-        messages: error.response.data.errors,
-        type: 'error',
-      });
+      displayAlertMessages(
+        { messages: getErrorMessages(error), type: 'error' },
+        setAlertState
+      );
     }
   };
 
@@ -91,14 +87,15 @@ export default function TaskDisplay(props) {
         (task) => task._id !== state.taskToDelete
       );
       setState({ ...state, tasks: newTasks, showDeleteConfirmation: false });
-      showAlertMessage({
-        display: true,
-        messages: ['task have been deleted'],
-        type: 'success',
-      });
-      console.log('DELETED');
+      displayAlertMessages(
+        { messages: ['task has been deleted'], type: 'success' },
+        setAlertState
+      );
     } catch (error) {
-      console.log(error);
+      displayAlertMessages(
+        { messages: getErrorMessages(error), type: 'error' },
+        setAlertState
+      );
     }
   };
 
@@ -137,7 +134,7 @@ export default function TaskDisplay(props) {
           {state.isLoading && <CircularProgress />}
           {!state.isLoading && (
             <AddTaskForm
-              setTasks={updateState}
+              setState={updateState}
               tasks={state.tasks}
               category={state.category}
             />
